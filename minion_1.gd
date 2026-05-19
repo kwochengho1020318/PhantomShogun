@@ -1,54 +1,37 @@
 
-extends CharacterBody2D
+extends CharacterBase
 class_name enemy
 @export var patrol_distance := 100.0
 @export var SPEED :=100
 @export var IDLE_SPEED=50
 @export var HP=5
-var current_speed= IDLE_SPEED
 
 
+var current_speed
 var start_x
 
-var direction=1
+var direction
 var waiting=false
 var next_direction=0
 
 var damaged_velocity_scale=20
 var damaged_velocity=0
 
-var mode = Mode.IDLE
-var locomotion_state= Locomotion.IDLE
-var state = State.NORMAL
-var attack_phase= Attack_Phase.NORMAL
 
-var player_in_range=false
+
+var player_in_vision=false
 var player=null
+var player_in_range = false
 
 var last_anime=""
 
-enum Locomotion{
-	RUN,
-	IDLE,
-	damaged
-}
-enum State{
-	DAMAGED,
-	NORMAL,
-	DEAD
-}
-enum Mode{
-	IDLE,
-	ACTIVATED
-}
-enum Attack_Phase{
-	PRE_ATTACK,
-	ATTACKING,
-	NORMAL
-}
+
 
 func _ready() -> void:
 	start_x = global_position.x
+	HP=5
+	current_speed= IDLE_SPEED
+	direction=1
 func _process(delta: float) -> void:
 	
 	manage_state()
@@ -70,21 +53,27 @@ func live_action(delta)->void:
 		velocity.x=0
 		return
 	if state==State.DAMAGED:
-		if (damaged_velocity-30)>0:
-			damaged_velocity-=30*delta
+		
 		velocity.x=damaged_velocity
+		return
+	if direction==1:
+		$Animation.flip_h=false
+		$AttackArea/CollisionArea.position.x = abs($AttackArea/CollisionArea.position.x)
+		$DetectArea/CollisionArea.position.x = abs($DetectArea/CollisionArea.position.x)
+	if direction==-1:
+		$AttackArea/CollisionArea.position.x = -abs($AttackArea/CollisionArea.position.x)
+		$DetectArea/CollisionArea.position.x = -abs($DetectArea/CollisionArea.position.x)
+		$Animation.flip_h= true
+	attack_action()
+	if attack_phase!=Attack_Phase.NORMAL:
+		velocity.x=0 
 		return
 	if direction:
 		velocity.x = direction * (current_speed)
 	else:
 		velocity.x = move_toward(velocity.x, 0, current_speed)
 	
-	if direction==1:
-		$Animation.flip_h=false
-		
-	if direction==-1:
-		$AttackArea/DetectArea.position.x = -abs($AttackArea/DetectArea.position.x)
-		$Animation.flip_h= true
+	
 
 func idle_mode()->void:
 	current_speed=IDLE_SPEED
@@ -96,6 +85,9 @@ func idle_mode()->void:
 	if  global_position.x<start_x-patrol_distance:
 		wait_at_edge(1)
 func activated_mode()->void:
+	if player_in_range and attack_phase==Attack_Phase.NORMAL :
+		attack_phase= Attack_Phase.PRE_ATTACK
+		return
 	current_speed=SPEED
 	if player==null:
 		print("no player!!")
@@ -118,8 +110,12 @@ func _on_edge_wait_timer_timeout() -> void:
 	global_position.x += direction * 2
 
 
-
-
+func attack_action():
+	if attack_phase==Attack_Phase.ATTACKING:
+		$AttackArea/CollisionArea.disabled=false
+	else:
+		$AttackArea/CollisionArea.disabled=true
+		
 
 
 func manage_state()->void:
@@ -195,13 +191,13 @@ func can_see_player()->bool:
 func _on_vision_body_entered(body: Node2D) -> void:
 	if body.name=="Player":
 		player=body
-		player_in_range=true
+		player_in_vision=true
 	
 		
 func _on_vision_body_exited(body: Node2D) -> void:
 	if body.name=="Player":
 		player=null
-		player_in_range=false
+		player_in_vision=false
 	mode= Mode.IDLE
 
 
@@ -214,7 +210,7 @@ func _on_hit_box_area_entered(area: Area2D) -> void:
 		return
 	if area.is_in_group("player_area") and area.name=="AttackArea":
 		
-		if area.position.x-position.x>0:
+		if area.global_position.x-global_position.x>0:
 			damaged_velocity=-damaged_velocity_scale
 			direction=1
 		else:
@@ -226,22 +222,26 @@ func _on_hit_box_area_entered(area: Area2D) -> void:
 		$Timers/DamageRecoveryTimer.start()
 
 
-func _on_attack_area_body_entered(body: Node2D) -> void:
-	if body.name=="Player":
-		attack_phase= Attack_Phase.PRE_ATTACK
-
-		
-		
-
-
-
-
-
 func _on_animation_animation_finished() -> void:
 	if attack_phase==Attack_Phase.PRE_ATTACK:
 		attack_phase=Attack_Phase.ATTACKING
 		return
 	if attack_phase==Attack_Phase.ATTACKING:
 		attack_phase=Attack_Phase.NORMAL
+		$Timers/AttackCoolDownTimer.start()
 		return
 		
+
+
+
+
+
+func _on_detect_area_body_entered(body: Node2D) -> void:
+	if body.name=="Player":
+		player_in_range= true
+		
+
+
+func _on_detect_area_body_exited(body: Node2D) -> void:
+	if body.name=="Player":
+		player_in_range= false
