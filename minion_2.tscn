@@ -1,0 +1,164 @@
+[gd_scene format=3 uid="uid://ch22saqvfn6a7"]
+
+[ext_resource type="PackedScene" uid="uid://bt5squitcgilm" path="res://minion_1.tscn" id="1_uog46"]
+[ext_resource type="Texture2D" uid="uid://bmfuk0aru8rrh" path="res://assets/player/minion_2.png" id="2_7aud1"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_xsp7l"]
+atlas = ExtResource("2_7aud1")
+region = Rect2(1152, 0, 192, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_xmaj8"]
+atlas = ExtResource("2_7aud1")
+region = Rect2(1344, 0, 192, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_satxp"]
+atlas = ExtResource("2_7aud1")
+region = Rect2(1536, 0, 192, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4m4rq"]
+atlas = ExtResource("2_7aud1")
+region = Rect2(1728, 0, 192, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_o0tp6"]
+atlas = ExtResource("2_7aud1")
+region = Rect2(1920, 0, 192, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_s6nir"]
+atlas = ExtResource("2_7aud1")
+region = Rect2(768, 0, 192, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_1hqpr"]
+atlas = ExtResource("2_7aud1")
+region = Rect2(960, 0, 192, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_sjx5h"]
+atlas = ExtResource("2_7aud1")
+region = Rect2(2112, 0, 192, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_inams"]
+atlas = ExtResource("2_7aud1")
+region = Rect2(0, 0, 192, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_q81qf"]
+atlas = ExtResource("2_7aud1")
+region = Rect2(192, 0, 192, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_r7eie"]
+atlas = ExtResource("2_7aud1")
+region = Rect2(1152, 0, 192, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_k4nqy"]
+atlas = ExtResource("2_7aud1")
+region = Rect2(384, 0, 192, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_wueo1"]
+atlas = ExtResource("2_7aud1")
+region = Rect2(576, 0, 192, 128)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_satxp"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_xsp7l")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_xmaj8")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_satxp")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_4m4rq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_o0tp6")
+}],
+"loop": false,
+"name": &"attack_1",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": null
+}, {
+"duration": 4.0,
+"texture": SubResource("AtlasTexture_s6nir")
+}],
+"loop": true,
+"name": &"damaged_1",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": null
+}, {
+"duration": 4.0,
+"texture": SubResource("AtlasTexture_1hqpr")
+}],
+"loop": true,
+"name": &"damaged_2",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_sjx5h")
+}],
+"loop": true,
+"name": &"dead",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_inams")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_q81qf")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 1.0
+}, {
+"frames": [{
+"duration": 5.0,
+"texture": SubResource("AtlasTexture_r7eie")
+}],
+"loop": false,
+"name": &"pre_attack_1",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_k4nqy")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_wueo1")
+}],
+"loop": true,
+"name": &"walk",
+"speed": 5.0
+}]
+
+[node name="minion1" unique_id=665056483 instance=ExtResource("1_uog46")]
+
+[node name="Animation" parent="." index="0" unique_id=824132791]
+sprite_frames = SubResource("SpriteFrames_satxp")
+animation = &"attack_1"
+frame = 4
+frame_progress = 1.0
+
+[node name="AttackCoolDownTimer" parent="Timers" parent_id_path=PackedInt32Array(541122291) index="2" unique_id=1444358846]
+wait_time = 3.0
+
+[node name="DetectArea" parent="." index="5" unique_id=646004157]
+visible = true
+
+[node name="CollisionArea" parent="DetectArea" index="0" unique_id=1731299608]
+position = Vector2(36, 3)
+
+[node name="AttackArea" parent="." index="6" unique_id=2142547626]
+visible = true
+
+[node name="CollisionArea" parent="AttackArea" index="0" unique_id=1547318405]
+position = Vector2(50, 4)
+
+[connection signal="timeout" from="Timers/AttackCoolDownTimer" to="." method="_on_attack_cool_down_timer_timeout"]

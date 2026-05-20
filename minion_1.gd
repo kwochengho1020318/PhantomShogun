@@ -7,15 +7,14 @@ class_name enemy
 @export var HP=5
 
 
-var current_speed
+var current_speed= IDLE_SPEED
 var start_x
 
 var direction
 var waiting=false
 var next_direction=0
 
-var damaged_velocity_scale=20
-var damaged_velocity=0
+
 
 
 
@@ -25,6 +24,7 @@ var player_in_range = false
 
 var last_anime=""
 
+var can_attack= true
 
 
 func _ready() -> void:
@@ -32,30 +32,36 @@ func _ready() -> void:
 	HP=5
 	current_speed= IDLE_SPEED
 	direction=1
-func _process(delta: float) -> void:
-	
-	manage_state()
-	action_by_mode()
-	manage_animate()
+func _process(_delta: float) -> void:
+	# manage the visual state and animate update
+	_manage_state()
+	_manage_animate()
 func _physics_process(delta: float) -> void:
-	if state!=State.DEAD:
-		if not is_on_floor():
-			velocity += get_gravity() * delta
 	if state==State.DEAD:
+		_dead_action()
+		
 		return
-	live_action(delta)
+	if not is_on_floor():
+		velocity += get_gravity() * delta
+	_character_action(delta)
 	
 	move_and_slide()
 
-func live_action(delta)->void:
+func _character_action(_delta)->void:
 	
-	if state==State.DEAD:
-		velocity.x=0
-		return
-	if state==State.DAMAGED:
-		
-		velocity.x=damaged_velocity
-		return
+	_manage_state()
+	
+	strat_by_mode()
+	_handle_direction()
+	attack_action()
+	_moving_action()
+func _dead_action()->void:
+	velocity= Vector2(0,0)
+	$CollisionShape2D.disabled=true
+	$AttackArea/CollisionArea.disabled=true
+	
+	get_tree().call_group("live_group", "set_disabled", true)
+func _handle_direction()->void:
 	if direction==1:
 		$Animation.flip_h=false
 		$AttackArea/CollisionArea.position.x = abs($AttackArea/CollisionArea.position.x)
@@ -64,7 +70,11 @@ func live_action(delta)->void:
 		$AttackArea/CollisionArea.position.x = -abs($AttackArea/CollisionArea.position.x)
 		$DetectArea/CollisionArea.position.x = -abs($DetectArea/CollisionArea.position.x)
 		$Animation.flip_h= true
-	attack_action()
+func _moving_action()->void:
+	if state==State.DAMAGED:
+		
+		velocity.x=damaged_velocity
+		return
 	if attack_phase!=Attack_Phase.NORMAL:
 		velocity.x=0 
 		return
@@ -72,9 +82,6 @@ func live_action(delta)->void:
 		velocity.x = direction * (current_speed)
 	else:
 		velocity.x = move_toward(velocity.x, 0, current_speed)
-	
-	
-
 func idle_mode()->void:
 	current_speed=IDLE_SPEED
 	if waiting:
@@ -86,13 +93,15 @@ func idle_mode()->void:
 		wait_at_edge(1)
 func activated_mode()->void:
 	if player_in_range and attack_phase==Attack_Phase.NORMAL :
+		if !can_attack:
+			return
 		attack_phase= Attack_Phase.PRE_ATTACK
+		can_attack= false
 		return
 	current_speed=SPEED
 	if player==null:
 		print("no player!!")
 	if player.global_position<global_position:
-		
 		direction=-1
 	else:
 		direction=1
@@ -118,7 +127,7 @@ func attack_action():
 		
 
 
-func manage_state()->void:
+func _manage_state()->void:
 	if HP<=0:
 		$CollisionShape2D.disabled=true
 		state=State.DEAD
@@ -132,38 +141,43 @@ func manage_state()->void:
 	
 	
 		
-func action_by_mode()->void:
+func strat_by_mode()->void:
 	if state==State.DAMAGED or state==State.DEAD:
 		return
 	if mode==Mode.IDLE:
 		idle_mode()
 	elif mode==Mode.ACTIVATED:
 		activated_mode()
-func manage_animate()->void:
+func _manage_animate()->void:
 	if state==State.DEAD:
-		if $Animation.name !=("dead"):
+		if $Animation.animation !=("dead"):
 			$Animation.play("dead")
 		return
 	if state==State.DAMAGED:
-		if $Animation.name!=("damaged"):
-			$Animation.play("damaged")
+		if damaged_count%2+1==1:
+			
+			if $Animation.animation!=("damaged_1"):
+				$Animation.play("damaged_1")
+		else:
+			if $Animation.animation!=("damaged_2"):
+				$Animation.play("damaged_2")
 		return
 	if attack_phase==Attack_Phase.PRE_ATTACK:
-		if $Animation.name!=("pre_attack_1"):
+		if $Animation.animation!=("pre_attack_1"):
 			$Animation.play("pre_attack_1")
 		
 		return
 	if attack_phase==Attack_Phase.ATTACKING:
-		if $Animation.name!=("attack_1"):
+		if $Animation.animation!=("attack_1"):
 			$Animation.play("attack_1")
 			
 		return
 	if locomotion_state==Locomotion.IDLE:
-		if $Animation.name!=("idle"):
+		if $Animation.animation!=("idle"):
 			$Animation.play("idle")
 		return
 	if locomotion_state==Locomotion.RUN:
-		if $Animation.name!=("walk"):
+		if $Animation.animation!=("walk"):
 			$Animation.play("walk")
 		return
 
@@ -218,7 +232,10 @@ func _on_hit_box_area_entered(area: Area2D) -> void:
 
 			direction=-1
 		HP-=1
+		if HP<=0:
+			$Timers/CleanupTimer.start()
 		state = State.DAMAGED
+		damaged_count+=1
 		$Timers/DamageRecoveryTimer.start()
 
 
@@ -245,3 +262,11 @@ func _on_detect_area_body_entered(body: Node2D) -> void:
 func _on_detect_area_body_exited(body: Node2D) -> void:
 	if body.name=="Player":
 		player_in_range= false
+
+
+func _on_cleanup_timer_timeout() -> void:
+	queue_free()
+
+
+func _on_attack_cool_down_timer_timeout() -> void:
+	can_attack= true

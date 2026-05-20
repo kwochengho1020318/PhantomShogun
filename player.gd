@@ -1,20 +1,20 @@
-extends CharacterBody2D
+extends CharacterBase
 
 var speed=300
-var jump_speed=500
-var locomotion_state
-var combat_state
-var state
+var jump_speed=350
+@export var valid_parry_time_msec = 300
+
 
 ##input
 var walk_direction
 var jump_action
 var attack_action
-
-var damaged_velocity_scale=50
-var damaged_velocity=0
+var parry_action
+var parry_start
+var parry_start_time
 
 var can_attack=true
+var can_jump = true
 var attack_count=0
 var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
 
@@ -22,101 +22,124 @@ var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
 func _ready() -> void:
 	get_input()
 	locomotion_state=Locomotion.IDLE
-	combat_state=Combat.NORMAL
+	
 	state=State.NORMAL
 
-enum Locomotion {
-	IDLE,
-	RUN,
-	JUMP
-}
 
-enum Combat {
-	NORMAL,
-	ATTACK
-}
 
-enum State {
-	NORMAL,
-	DAMAGED,
-	DEAD
-}
+
+
+
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	get_input()
-	if combat_state==Combat.ATTACK:
+	if attack_phase==Attack_Phase.ATTACKING:
 		$AttackArea/CollisionShape2D.disabled=false
 	else:
 		$AttackArea/CollisionShape2D.disabled=true
-	manage_state()
-	manage_animate()
+	_manage_state()
+	_manage_animate()
 func get_input():
 	walk_direction= Input.get_axis("move_left","move_right")
 	jump_action = Input.is_action_just_pressed("jump")
 	attack_action=Input.is_action_just_pressed("attack")
-func moving_action()->void:
-	var v_x = velocity.x
+	parry_action = Input.is_action_pressed("parry")
+	parry_start = Input.is_action_just_pressed("parry")
+func _moving_action()->void:
 	if state==State.DAMAGED:
 		velocity.x=damaged_velocity
 		return
-	if v_x!=0:
-		$Animation.flip_h =v_x <= 0
+	
 	# update velocity ,skip if attacking 
-	if combat_state==Combat.ATTACK and locomotion_state!=Locomotion.JUMP or state==State.DAMAGED:
+	if attack_phase==Attack_Phase.ATTACKING and locomotion_state!=Locomotion.JUMP:
+		velocity.x=0
+		return
+	if parry_state== PARRY_STATE.PARRYING and locomotion_state!=Locomotion.JUMP:
 		velocity.x=0
 		return
 	#jump,updating jump state
-	if is_on_floor() and jump_action:
+	if is_on_floor() and jump_action and can_jump:
+		can_jump= false
 		locomotion_state=Locomotion.JUMP
 		velocity.y=-jump_speed
 	velocity.x=walk_direction*speed
 
 func _physics_process(delta: float) -> void:
-	get_input()
 	if not is_on_floor():
 		velocity.y += gravity * delta
-	moving_action()
-	
-		
+	_character_action(delta)
+	if is_on_floor() and !can_jump:
+		$Timers/JumpCooldownTimer.start()	
 	move_and_slide()
+func _character_action(_delta)->void:
+	get_input()
+	_moving_action()
+	_handle_direction()
 
-	
-func manage_state()->void:
-	var v_y = velocity.y
-	var v_x = velocity.x
-	var v=velocity.length()
-	
+func _handle_direction()->void:
+	if walk_direction!=0 and state==State.NORMAL and attack_phase== Attack_Phase.NORMAL:
+		$Animation.flip_h = walk_direction<0
 	if $Animation.flip_h==true:
 		$AttackArea/CollisionShape2D.position.x = -abs($AttackArea/CollisionShape2D.position.x)
 	else:
 		$AttackArea/CollisionShape2D.position.x = abs($AttackArea/CollisionShape2D.position.x)
-	if combat_state==Combat.ATTACK:
-		return
-	if locomotion_state==Locomotion.JUMP and is_on_floor():
-		locomotion_state=Locomotion.IDLE
+func _manage_state()->void:
+	var v=velocity.length()
+	
+	
+	
+	if locomotion_state==Locomotion.JUMP:
+		if is_on_floor():
+			locomotion_state=Locomotion.IDLE
+			
+			
 	if  attack_action and  can_attack:
-		combat_state=Combat.ATTACK
-		$Timers/AttackTimer.start()
+		attack_phase=Attack_Phase.ATTACKING
 		attack_count+=1
 		return
+		
+	# manage parry state
+	manage_parry_state()
+		
+		
 	if(v==0):
 		locomotion_state=Locomotion.IDLE
 		return
 	if is_on_floor() and velocity.x!=0:
 		locomotion_state=Locomotion.RUN
-	
-func manage_animate()->void:
+func manage_parry_state()->void:
+	if attack_phase!=Attack_Phase.NORMAL:
+		parry_state = PARRY_STATE.NORMAL
+		return
+	if parry_state == PARRY_STATE.PARRY_SUCCESS:
+		return
+	if parry_start:
+		parry_start_time = Time.get_ticks_msec() 
+	if parry_action:
+		parry_state = PARRY_STATE.PARRYING
+	else:
+		parry_state = PARRY_STATE.NORMAL
+func _manage_animate()->void:
 	if state==State.DAMAGED:
 		if $Animation.animation !="damaged":
 				$Animation.play("damaged")
 		return
-	if combat_state==Combat.ATTACK:
+	if attack_phase==Attack_Phase.ATTACKING:
 		if !can_attack: return
 		var temp = attack_count%3+1
 		if $Animation.animation!="attack_%d" %[temp]:
 				$Animation.play("attack_%d" %[temp])
 		
+		return
+	if parry_state == PARRY_STATE.PARRY_SUCCESS:
+		if !$Animation.animation.begins_with("parry_success") :
+			var randnum = randi_range(1,2)
+			$Animation.play("parry_success%d" %[randnum] )
+		return
+	if parry_state==PARRY_STATE.PARRYING:
+		if $Animation.animation!="parrying" :
+				$Animation.play("parrying" )
 		return
 	match locomotion_state:
 		Locomotion.IDLE:
@@ -135,10 +158,11 @@ func _on_animation_animation_finished() -> void:
 	var regex = RegEx.new()
 	regex.compile("^attack_\\d+$")
 	if regex.search($Animation.animation):
-		locomotion_state=Locomotion.IDLE
-		combat_state=Combat.NORMAL
-		$Animation.play("idle")
+		
+		attack_phase=Attack_Phase.NORMAL
 		can_attack=true
+	if $Animation.animation.begins_with("parry_success"):
+		parry_state= PARRY_STATE.NORMAL
 		
 
 
@@ -149,14 +173,28 @@ func _on_attack_timer_timeout() -> void:
 func _on_hit_box_area_entered(area: Area2D) -> void:
 	
 	if area.name=="AttackArea" and area.is_in_group("enemy_area"):
+		if parry_state==PARRY_STATE.PARRYING and Time.get_ticks_msec()-parry_start_time<=valid_parry_time_msec:
+			parry_state= PARRY_STATE.PARRY_SUCCESS
+			var enemy = area.get_parent()
+			if area.global_position.x>global_position.x:
+				global_position.x-=5
+				enemy.global_position.x+=5
+			else:
+				global_position.x+=5
+				enemy.global_position.x-=5
+			return
 		if area.global_position.x>global_position.x:
 			damaged_velocity=-damaged_velocity_scale
 		else:
 			damaged_velocity=damaged_velocity_scale
 		state=State.DAMAGED
-		print(damaged_velocity)
+		
 		$Timers/DamageRecoveryTimer.start()
 
 
 func _on_damage_recovery_timer_timeout() -> void:
 	state=State.NORMAL
+
+
+func _on_jump_cooldown_timer_timeout() -> void:
+	can_jump = true

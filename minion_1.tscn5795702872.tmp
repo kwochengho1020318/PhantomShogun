@@ -146,8 +146,7 @@ size = Vector2(535.875, 64)
 size = Vector2(34.5, 62)
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_h4r7f"]
-radius = 35.0
-height = 78.0
+height = 50.0
 
 [node name="minion1" type="CharacterBody2D" unique_id=665056483]
 script = ExtResource("1_3ye6f")
@@ -155,7 +154,7 @@ SPEED = 200
 
 [node name="Animation" type="AnimatedSprite2D" parent="." unique_id=824132791]
 sprite_frames = SubResource("SpriteFrames_5ddvl")
-animation = &"dead"
+animation = &"idle"
 autoplay = "idle"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=971624223]
@@ -173,7 +172,6 @@ wait_time = 0.5
 [node name="AttackCoolDownTimer" type="Timer" parent="Timers" unique_id=1444358846]
 
 [node name="CleanupTimer" type="Timer" parent="Timers" unique_id=969813998]
-wait_time = 4.345000000000001
 
 [node name="Vision" type="Area2D" parent="." unique_id=513566558]
 visible = false
@@ -205,7 +203,6 @@ shape = SubResource("CapsuleShape2D_h4r7f")
 [connection signal="animation_finished" from="Animation" to="." method="_on_animation_animation_finished"]
 [connection signal="timeout" from="Timers/EdgeWaitTimer" to="." method="_on_edge_wait_timer_timeout"]
 [connection signal="timeout" from="Timers/DamageRecoveryTimer" to="." method="_on_damage_recovery_timer_timeout"]
-[connection signal="timeout" from="Timers/CleanupTimer" to="." method="_on_cleanup_timer_timeout"]
 [connection signal="body_entered" from="Vision" to="." method="_on_vision_body_entered"]
 [connection signal="body_exited" from="Vision" to="." method="_on_vision_body_exited"]
 [connection signal="area_entered" from="HitBox" to="." method="_on_hit_box_area_entered"]
