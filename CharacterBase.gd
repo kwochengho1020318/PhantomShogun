@@ -32,6 +32,9 @@ var locomotion_state= Locomotion.IDLE
 var state = State.NORMAL
 var attack_phase= Attack_Phase.NORMAL
 var parry_state = PARRY_STATE.NORMAL
+var facing_direction=1
+
+
 
 @export var damaged_velocity_scale=10
 var damaged_velocity=0

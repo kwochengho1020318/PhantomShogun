@@ -3,7 +3,7 @@ extends CharacterBase
 class_name enemy
 @export var patrol_distance := 100.0
 @export var SPEED :=100
-@export var IDLE_SPEED=50
+@export var IDLE_SPEED:=50
 @export var HP=5
 
 
@@ -21,6 +21,7 @@ var next_direction=0
 var player_in_vision=false
 var player=null
 var player_in_range = false
+var player_direction
 
 var last_anime=""
 
@@ -42,7 +43,8 @@ func _physics_process(delta: float) -> void:
 		
 		return
 	if not is_on_floor():
-		velocity += get_gravity() * delta
+		if not $FlyComponent:
+			velocity += get_gravity() * delta
 	_character_action(delta)
 	
 	move_and_slide()
@@ -58,18 +60,25 @@ func _character_action(_delta)->void:
 func _dead_action()->void:
 	velocity= Vector2(0,0)
 	$CollisionShape2D.disabled=true
-	$AttackArea/CollisionArea.disabled=true
+	$AttackComponent/AttackArea/CollisionArea.disabled=true
 	
 	get_tree().call_group("live_group", "set_disabled", true)
 func _handle_direction()->void:
-	if direction==1:
+	if !mode==Mode.ACTIVATED:
+		facing_direction= direction
+	else:
+		if (player.global_position.x-global_position.x)>0:
+			player_direction=1
+		else:
+			player_direction = -1
+		
+		facing_direction= player_direction
+	if facing_direction==1:
 		$Animation.flip_h=false
-		$AttackArea/CollisionArea.position.x = abs($AttackArea/CollisionArea.position.x)
-		$DetectArea/CollisionArea.position.x = abs($DetectArea/CollisionArea.position.x)
-	if direction==-1:
-		$AttackArea/CollisionArea.position.x = -abs($AttackArea/CollisionArea.position.x)
-		$DetectArea/CollisionArea.position.x = -abs($DetectArea/CollisionArea.position.x)
+		
+	if facing_direction==-1:
 		$Animation.flip_h= true
+	$AttackComponent.area_facing(facing_direction)
 func _moving_action()->void:
 	if state==State.DAMAGED:
 		
@@ -87,20 +96,25 @@ func idle_mode()->void:
 	if waiting:
 		direction=0
 		return
-	if global_position.x>start_x+patrol_distance:
+	if global_position.x>start_x+patrol_distance and facing_direction==1:
 		wait_at_edge(-1)
-	if  global_position.x<start_x-patrol_distance:
+	if  global_position.x<start_x-patrol_distance  and facing_direction==-1:
 		wait_at_edge(1)
 func activated_mode()->void:
-	if player_in_range and attack_phase==Attack_Phase.NORMAL :
-		if !can_attack:
-			return
+	if player_in_range and can_attack :
+		
 		attack_phase= Attack_Phase.PRE_ATTACK
 		can_attack= false
 		return
 	current_speed=SPEED
 	if player==null:
 		print("no player!!")
+	var dist = global_position.distance_to(player.global_position)
+	if (player.global_position.x-global_position.x)>0:
+		player_direction=1
+	else:
+		player_direction = -1
+
 	if player.global_position<global_position:
 		direction=-1
 	else:
@@ -120,10 +134,7 @@ func _on_edge_wait_timer_timeout() -> void:
 
 
 func attack_action():
-	if attack_phase==Attack_Phase.ATTACKING:
-		$AttackArea/CollisionArea.disabled=false
-	else:
-		$AttackArea/CollisionArea.disabled=true
+	$AttackComponent.area_valid(!attack_phase==Attack_Phase.ATTACKING)
 		
 
 
@@ -131,12 +142,14 @@ func _manage_state()->void:
 	if HP<=0:
 		$CollisionShape2D.disabled=true
 		state=State.DEAD
-	if player:
-		if can_see_player():
-			mode=Mode.ACTIVATED
-	if velocity.x==0:
+	if can_see_player():
+		mode=Mode.ACTIVATED
+	else:
+		mode= Mode.IDLE
+	if velocity.length()==0:
 		locomotion_state=Locomotion.IDLE
 	else:
+		
 		locomotion_state=Locomotion.RUN
 	
 	
@@ -212,7 +225,6 @@ func _on_vision_body_exited(body: Node2D) -> void:
 	if body.name=="Player":
 		player=null
 		player_in_vision=false
-	mode= Mode.IDLE
 
 
 func _on_damage_recovery_timer_timeout() -> void:
@@ -269,4 +281,5 @@ func _on_cleanup_timer_timeout() -> void:
 
 
 func _on_attack_cool_down_timer_timeout() -> void:
+	
 	can_attack= true

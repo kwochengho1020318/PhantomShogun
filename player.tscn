@@ -264,7 +264,7 @@ animations = [{
 }]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_i3pqv"]
-radius = 11.0
+radius = 14.0
 height = 36.0
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_hqtel"]
@@ -304,7 +304,7 @@ limit_left = 0
 [node name="AttackArea" type="Area2D" parent="." unique_id=2032062564 groups=["player_area"]]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="AttackArea" unique_id=436533344]
-position = Vector2(24, -6)
+position = Vector2(23, -2)
 shape = SubResource("CapsuleShape2D_i3pqv")
 
 [node name="HitBox" type="Area2D" parent="." unique_id=1918218344]

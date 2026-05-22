@@ -1,5 +1,6 @@
 [gd_scene format=4 uid="uid://dbu1m5286k4wg"]
 
+[ext_resource type="Script" uid="uid://cero3qx7gbej3" path="res://level.gd" id="1_n6hdu"]
 [ext_resource type="Texture2D" uid="uid://07lmiiq2sb8g" path="res://assets/map/PixelFantasy_Caves_1.0/background1.png" id="1_oi3di"]
 [ext_resource type="PackedScene" uid="uid://dpfok4os4o1ll" path="res://player.tscn" id="1_u52ul"]
 [ext_resource type="Texture2D" uid="uid://cv6ppwbube3xr" path="res://assets/map/PixelFantasy_Caves_1.0/mainlev_build.png" id="2_vonw3"]
@@ -1226,7 +1227,10 @@ texture = ExtResource("2_vonw3")
 physics_layer_0/collision_layer = 1
 sources/0 = SubResource("TileSetAtlasSource_oi3di")
 
+[sub_resource type="GDScript" id="GDScript_1ainy"]
+
 [node name="level" type="Node2D" unique_id=734408924]
+script = ExtResource("1_n6hdu")
 
 [node name="Background3" type="Sprite2D" parent="." unique_id=1738126546]
 position = Vector2(6509.6797, 268.3399)
@@ -1260,10 +1264,11 @@ tile_set = SubResource("TileSet_0b4ue")
 position = Vector2(561, 375)
 
 [node name="minion2" parent="minions" unique_id=665056483 instance=ExtResource("4_0b4ue")]
-position = Vector2(2148, 686)
+position = Vector2(1314, 302)
 
 [node name="minion5" parent="minions" unique_id=712277368 instance=ExtResource("5_f2txt")]
 position = Vector2(4017, 906)
 
-[node name="bat" parent="minions" unique_id=83931981 instance=ExtResource("6_1ainy")]
-position = Vector2(2009, 314)
+[node name="bat" parent="minions" unique_id=118750780 instance=ExtResource("6_1ainy")]
+position = Vector2(2117, 307)
+script = SubResource("GDScript_1ainy")

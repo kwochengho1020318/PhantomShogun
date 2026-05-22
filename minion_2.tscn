@@ -2,14 +2,7 @@
 
 [ext_resource type="PackedScene" uid="uid://bt5squitcgilm" path="res://minion_1.tscn" id="1_uog46"]
 [ext_resource type="Texture2D" uid="uid://bmfuk0aru8rrh" path="res://assets/player/minion_2.png" id="2_7aud1"]
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_xsp7l"]
-atlas = ExtResource("2_7aud1")
-region = Rect2(1152, 0, 192, 128)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_xmaj8"]
-atlas = ExtResource("2_7aud1")
-region = Rect2(1344, 0, 192, 128)
+[ext_resource type="Script" uid="uid://gonstc85h6kt" path="res://minion_2.gd" id="2_xsp7l"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_satxp"]
 atlas = ExtResource("2_7aud1")
@@ -47,6 +40,14 @@ region = Rect2(192, 0, 192, 128)
 atlas = ExtResource("2_7aud1")
 region = Rect2(1152, 0, 192, 128)
 
+[sub_resource type="AtlasTexture" id="AtlasTexture_xsp7l"]
+atlas = ExtResource("2_7aud1")
+region = Rect2(1344, 0, 192, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_xmaj8"]
+atlas = ExtResource("2_7aud1")
+region = Rect2(1536, 0, 192, 128)
+
 [sub_resource type="AtlasTexture" id="AtlasTexture_k4nqy"]
 atlas = ExtResource("2_7aud1")
 region = Rect2(384, 0, 192, 128)
@@ -58,12 +59,6 @@ region = Rect2(576, 0, 192, 128)
 [sub_resource type="SpriteFrames" id="SpriteFrames_satxp"]
 animations = [{
 "frames": [{
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_xsp7l")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_xmaj8")
-}, {
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_satxp")
 }, {
@@ -121,6 +116,12 @@ animations = [{
 "frames": [{
 "duration": 5.0,
 "texture": SubResource("AtlasTexture_r7eie")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_xsp7l")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_xmaj8")
 }],
 "loop": false,
 "name": &"pre_attack_1",
@@ -138,16 +139,16 @@ animations = [{
 "speed": 5.0
 }]
 
-[node name="minion1" unique_id=665056483 instance=ExtResource("1_uog46")]
+[node name="minion2" unique_id=665056483 instance=ExtResource("1_uog46")]
+script = ExtResource("2_xsp7l")
+SPEED = 100
 
 [node name="Animation" parent="." index="0" unique_id=824132791]
 sprite_frames = SubResource("SpriteFrames_satxp")
 animation = &"attack_1"
-frame = 4
-frame_progress = 1.0
 
 [node name="AttackCoolDownTimer" parent="Timers" parent_id_path=PackedInt32Array(541122291) index="2" unique_id=1444358846]
-wait_time = 3.0
+wait_time = 2.0
 
 [node name="DetectArea" parent="." index="5" unique_id=646004157]
 visible = true
@@ -160,5 +161,3 @@ visible = true
 
 [node name="CollisionArea" parent="AttackArea" index="0" unique_id=1547318405]
 position = Vector2(50, 4)
-
-[connection signal="timeout" from="Timers/AttackCoolDownTimer" to="." method="_on_attack_cool_down_timer_timeout"]
