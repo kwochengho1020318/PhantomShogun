@@ -141,7 +141,6 @@ animations = [{
 
 [node name="minion2" unique_id=665056483 instance=ExtResource("1_uog46")]
 script = ExtResource("2_xsp7l")
-SPEED = 100
 
 [node name="Animation" parent="." index="0" unique_id=824132791]
 sprite_frames = SubResource("SpriteFrames_satxp")
@@ -150,14 +149,7 @@ animation = &"attack_1"
 [node name="AttackCoolDownTimer" parent="Timers" parent_id_path=PackedInt32Array(541122291) index="2" unique_id=1444358846]
 wait_time = 2.0
 
-[node name="DetectArea" parent="." index="5" unique_id=646004157]
-visible = true
+[node name="RandomActionTimer" type="Timer" parent="Timers" parent_id_path=PackedInt32Array(541122291) index="4" unique_id=1387161173]
+autostart = true
 
-[node name="CollisionArea" parent="DetectArea" index="0" unique_id=1731299608]
-position = Vector2(36, 3)
-
-[node name="AttackArea" parent="." index="6" unique_id=2142547626]
-visible = true
-
-[node name="CollisionArea" parent="AttackArea" index="0" unique_id=1547318405]
-position = Vector2(50, 4)
+[connection signal="timeout" from="Timers/RandomActionTimer" to="." method="_on_random_action_timer_timeout"]

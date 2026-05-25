@@ -20,7 +20,6 @@ var next_direction=0
 
 var player_in_vision=false
 var player=null
-var player_in_range = false
 var player_direction
 
 var last_anime=""
@@ -65,7 +64,8 @@ func _dead_action()->void:
 	get_tree().call_group("live_group", "set_disabled", true)
 func _handle_direction()->void:
 	if !mode==Mode.ACTIVATED:
-		facing_direction= direction
+		if direction!=0:
+			facing_direction= direction
 	else:
 		if (player.global_position.x-global_position.x)>0:
 			player_direction=1
@@ -73,9 +73,9 @@ func _handle_direction()->void:
 			player_direction = -1
 		
 		facing_direction= player_direction
+	
 	if facing_direction==1:
 		$Animation.flip_h=false
-		
 	if facing_direction==-1:
 		$Animation.flip_h= true
 	$AttackComponent.area_facing(facing_direction)
@@ -101,8 +101,7 @@ func idle_mode()->void:
 	if  global_position.x<start_x-patrol_distance  and facing_direction==-1:
 		wait_at_edge(1)
 func activated_mode()->void:
-	if player_in_range and can_attack :
-		
+	if $AttackComponent.get_player_in_range() and can_attack :
 		attack_phase= Attack_Phase.PRE_ATTACK
 		can_attack= false
 		return
@@ -265,15 +264,7 @@ func _on_animation_animation_finished() -> void:
 
 
 
-func _on_detect_area_body_entered(body: Node2D) -> void:
-	if body.name=="Player":
-		player_in_range= true
-		
 
-
-func _on_detect_area_body_exited(body: Node2D) -> void:
-	if body.name=="Player":
-		player_in_range= false
 
 
 func _on_cleanup_timer_timeout() -> void:

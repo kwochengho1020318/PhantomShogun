@@ -1,13 +1,13 @@
 extends enemy
 
+var random_action = 1
 
 func activated_mode()->void:
-	if player_in_range and attack_phase==Attack_Phase.NORMAL :
-		if can_attack:
-			
-			attack_phase= Attack_Phase.PRE_ATTACK
-			can_attack= false
-			return
+	
+	if $AttackComponent.get_player_in_range() and can_attack :
+		attack_phase= Attack_Phase.PRE_ATTACK
+		can_attack= false
+		return
 	current_speed=SPEED
 	if player==null:
 		print("no player!!")
@@ -17,10 +17,14 @@ func activated_mode()->void:
 		player_direction=1
 	else:
 		player_direction = -1
-	if dist>90:
+	if dist>80:
 		direction=player_direction
-	elif dist<70:
-		
-		direction = -player_direction
+	if dist<30:
+		direction = 0
 	else:
-		direction=0
+		direction = random_action*player_direction
+
+
+func _on_random_action_timer_timeout() -> void:
+	
+	random_action = randi_range(-1,1)

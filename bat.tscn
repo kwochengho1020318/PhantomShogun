@@ -145,13 +145,6 @@ animations = [{
 radius = 7.0
 height = 14.0
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_3tecl"]
-size = Vector2(77, 19)
-
-[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_jp0fn"]
-radius = 18.0
-height = 36.0
-
 [node name="bat" unique_id=665056483 instance=ExtResource("1_pb2o4")]
 script = ExtResource("2_3tecl")
 
@@ -161,16 +154,5 @@ animation = &"idle"
 
 [node name="CollisionShape2D" parent="." index="1" unique_id=971624223]
 shape = SubResource("CapsuleShape2D_3tecl")
-
-[node name="AttackArea" parent="AttackComponent" parent_id_path=PackedInt32Array(428013030) index="0" unique_id=2142547626]
-visible = true
-
-[node name="CollisionArea" parent="AttackComponent/AttackArea" index="0" unique_id=1547318405]
-position = Vector2(1.5, -5.5)
-shape = SubResource("RectangleShape2D_3tecl")
-
-[node name="CollisionArea" parent="AttackComponent/DetectArea" parent_id_path=PackedInt32Array(646004157) index="0" unique_id=1731299608]
-position = Vector2(0, -3)
-shape = SubResource("CapsuleShape2D_jp0fn")
 
 [node name="FlyComponent" type="Node2D" parent="." index="6" unique_id=1955539972]

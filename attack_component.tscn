@@ -14,7 +14,6 @@ height = 52.0
 script = ExtResource("1_3dc41")
 
 [node name="AttackArea" type="Area2D" parent="." unique_id=602289161 groups=["enemy_area"]]
-visible = false
 
 [node name="CollisionArea" type="CollisionShape2D" parent="AttackArea" unique_id=1742151429]
 position = Vector2(46, 0)
@@ -25,3 +24,6 @@ shape = SubResource("CapsuleShape2D_j6ywg")
 [node name="CollisionArea" type="CollisionShape2D" parent="DetectArea" unique_id=1134613144]
 position = Vector2(41, 0)
 shape = SubResource("CapsuleShape2D_h4r7f")
+
+[connection signal="body_entered" from="DetectArea" to="." method="_on_detect_area_body_entered"]
+[connection signal="body_exited" from="DetectArea" to="." method="_on_detect_area_body_exited"]
