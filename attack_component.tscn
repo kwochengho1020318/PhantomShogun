@@ -3,23 +3,27 @@
 [ext_resource type="Script" uid="uid://dcuio4anbrkvw" path="res://attack_component.gd" id="1_3dc41"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_j6ywg"]
-radius = 21.0
-height = 52.0
+radius = 17.0
+height = 46.0
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_h4r7f"]
-radius = 21.0
+radius = 14.0
 height = 52.0
 
 [node name="AttackComponent" type="Node2D" unique_id=873897264]
 script = ExtResource("1_3dc41")
 
 [node name="AttackArea" type="Area2D" parent="." unique_id=602289161 groups=["enemy_area"]]
+collision_layer = 4
+collision_mask = 3
 
 [node name="CollisionArea" type="CollisionShape2D" parent="AttackArea" unique_id=1742151429]
 position = Vector2(46, 0)
 shape = SubResource("CapsuleShape2D_j6ywg")
 
 [node name="DetectArea" type="Area2D" parent="." unique_id=1862480575 groups=["enemy_area"]]
+collision_layer = 4
+collision_mask = 3
 
 [node name="CollisionArea" type="CollisionShape2D" parent="DetectArea" unique_id=1134613144]
 position = Vector2(41, 0)

@@ -18,11 +18,11 @@ func activated_mode()->void:
 	else:
 		player_direction = -1
 	if dist>80:
-		direction=player_direction
-	if dist<30:
-		direction = 0
+		direction.x=player_direction
+	elif dist<30:
+		direction.x = 0
 	else:
-		direction = random_action*player_direction
+		direction.x = random_action*player_direction
 
 
 func _on_random_action_timer_timeout() -> void:

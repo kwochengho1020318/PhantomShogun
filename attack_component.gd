@@ -24,7 +24,8 @@ func _on_detect_area_body_entered(body: Node2D) -> void:
 		
 		player_in_range= true
 		
-
+func disable() ->void:
+	queue_free()
 
 func _on_detect_area_body_exited(body: Node2D) -> void:
 	if body.name=="Player":

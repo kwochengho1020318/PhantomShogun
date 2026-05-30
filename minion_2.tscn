@@ -139,12 +139,31 @@ animations = [{
 "speed": 5.0
 }]
 
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_xsp7l"]
+radius = 14.0
+height = 68.0
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_xsp7l"]
+size = Vector2(34.5, 66)
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_xmaj8"]
+radius = 35.0
+height = 72.0
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_satxp"]
+radius = 33.0
+height = 66.0
+
 [node name="minion2" unique_id=665056483 instance=ExtResource("1_uog46")]
 script = ExtResource("2_xsp7l")
 
 [node name="Animation" parent="." index="0" unique_id=824132791]
 sprite_frames = SubResource("SpriteFrames_satxp")
-animation = &"attack_1"
+frame = 2
+frame_progress = 1.0
+
+[node name="CollisionShape2D" parent="." index="1" unique_id=971624223]
+shape = SubResource("CapsuleShape2D_xsp7l")
 
 [node name="AttackCoolDownTimer" parent="Timers" parent_id_path=PackedInt32Array(541122291) index="2" unique_id=1444358846]
 wait_time = 2.0
@@ -152,4 +171,20 @@ wait_time = 2.0
 [node name="RandomActionTimer" type="Timer" parent="Timers" parent_id_path=PackedInt32Array(541122291) index="4" unique_id=1387161173]
 autostart = true
 
+[node name="CollisionShape2D" parent="HitBox" parent_id_path=PackedInt32Array(1151708614) index="0" unique_id=1122191259]
+shape = SubResource("RectangleShape2D_xsp7l")
+
+[node name="CollisionArea" parent="AttackComponent/AttackArea" parent_id_path=PackedInt32Array(873897264, 602289161) index="0" unique_id=1742151429]
+position = Vector2(50, 1)
+shape = SubResource("CapsuleShape2D_xmaj8")
+
+[node name="DetectArea" parent="AttackComponent" parent_id_path=PackedInt32Array(873897264) index="1" unique_id=1862480575]
+visible = false
+
+[node name="CollisionArea" parent="AttackComponent/DetectArea" index="0" unique_id=1134613144]
+position = Vector2(45, -1)
+shape = SubResource("CapsuleShape2D_satxp")
+
 [connection signal="timeout" from="Timers/RandomActionTimer" to="." method="_on_random_action_timer_timeout"]
+
+[editable path="AttackComponent"]

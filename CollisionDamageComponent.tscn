@@ -1,0 +1,16 @@
+[gd_scene format=3 uid="uid://drkpvwba0jauj"]
+
+[ext_resource type="Script" uid="uid://0fpsyvl1rci0" path="res://collision_damage_component.gd" id="1_bbpsg"]
+
+[node name="CollisionDamageComponent" type="Node2D" unique_id=605347326 groups=["enemy_area"]]
+script = ExtResource("1_bbpsg")
+
+[node name="Area2D" type="Area2D" parent="." unique_id=505208269 groups=["enemy_area"]]
+collision_layer = 4
+collision_mask = 2
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Area2D" unique_id=512314386]
+position = Vector2(-6, 0)
+polygon = PackedVector2Array(42, 10, 61, -16, -45, -14, -27, 13)
+
+[connection signal="area_entered" from="Area2D" to="." method="_on_area_2d_area_entered"]

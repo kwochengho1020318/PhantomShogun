@@ -2,11 +2,12 @@ extends CharacterBase
 
 var speed=300
 var jump_speed=350
+@export var hp = 10
 @export var valid_parry_time_msec = 300
 
 
 ##input
-var walk_direction
+var direction
 var jump_action
 var attack_action
 var parry_action
@@ -20,11 +21,14 @@ var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+	for obj in get_tree().get_nodes_in_group("enemy_area"):
+		if obj.has_signal("hit"):
+			obj.hit.connect(_on_hit)
 	get_input()
 	locomotion_state=Locomotion.IDLE
 	
 	state=State.NORMAL
-
+	
 
 
 
@@ -34,14 +38,11 @@ func _ready() -> void:
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(_delta: float) -> void:
 	get_input()
-	if attack_phase==Attack_Phase.ATTACKING:
-		$AttackArea/CollisionShape2D.disabled=false
-	else:
-		$AttackArea/CollisionShape2D.disabled=true
+	$AttackComponent.area_valid(attack_phase==Attack_Phase.ATTACKING)
 	_manage_state()
 	_manage_animate()
 func get_input():
-	walk_direction= Input.get_axis("move_left","move_right")
+	direction= Input.get_axis("move_left","move_right")
 	jump_action = Input.is_action_just_pressed("jump")
 	attack_action=Input.is_action_just_pressed("attack")
 	parry_action = Input.is_action_pressed("parry")
@@ -63,7 +64,7 @@ func _moving_action()->void:
 		can_jump= false
 		locomotion_state=Locomotion.JUMP
 		velocity.y=-jump_speed
-	velocity.x=walk_direction*speed
+	velocity.x=direction*speed
 
 func _physics_process(delta: float) -> void:
 	if not is_on_floor():
@@ -78,12 +79,13 @@ func _character_action(_delta)->void:
 	_handle_direction()
 
 func _handle_direction()->void:
-	if walk_direction!=0 and state==State.NORMAL and attack_phase== Attack_Phase.NORMAL:
-		$Animation.flip_h = walk_direction<0
+	if direction!=0 and state==State.NORMAL and attack_phase== Attack_Phase.NORMAL:
+		$Animation.flip_h = direction<0
 	if $Animation.flip_h==true:
-		$AttackArea/CollisionShape2D.position.x = -abs($AttackArea/CollisionShape2D.position.x)
+		facing_direction=-1
 	else:
-		$AttackArea/CollisionShape2D.position.x = abs($AttackArea/CollisionShape2D.position.x)
+		facing_direction=1
+	$AttackComponent.area_facing(facing_direction)
 func _manage_state()->void:
 	var v=velocity.length()
 	
@@ -194,7 +196,11 @@ func _on_hit_box_area_entered(area: Area2D) -> void:
 
 func _on_damage_recovery_timer_timeout() -> void:
 	state=State.NORMAL
-
+func _on_hit()->void:
+	state=State.DAMAGED
+	$Timers/DamageRecoveryTimer.start()
 
 func _on_jump_cooldown_timer_timeout() -> void:
 	can_jump = true
+
+	

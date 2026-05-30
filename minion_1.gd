@@ -5,12 +5,18 @@ class_name enemy
 @export var SPEED :=100
 @export var IDLE_SPEED:=50
 @export var HP=5
+@export var initial_patrol = PATROL_STATE.PATROL
 
+
+enum  PATROL_STATE{
+	PATROL,
+	IDLE
+}
 
 var current_speed= IDLE_SPEED
 var start_x
 
-var direction
+var direction=Vector2(1,0)
 var waiting=false
 var next_direction=0
 
@@ -31,20 +37,20 @@ func _ready() -> void:
 	start_x = global_position.x
 	HP=5
 	current_speed= IDLE_SPEED
-	direction=1
+	direction=Vector2(1,0)
 func _process(_delta: float) -> void:
 	# manage the visual state and animate update
 	_manage_state()
 	_manage_animate()
 func _physics_process(delta: float) -> void:
-	if state==State.DEAD:
-		_dead_action()
+	
+	if not is_on_floor() and (!$FlyComponent ):
+		velocity += get_gravity() * delta
 		
-		return
-	if not is_on_floor():
-		if not $FlyComponent:
-			velocity += get_gravity() * delta
-	_character_action(delta)
+	if !dead:	
+		_character_action(delta)
+	else:
+		velocity.x=0
 	
 	move_and_slide()
 
@@ -58,14 +64,18 @@ func _character_action(_delta)->void:
 	_moving_action()
 func _dead_action()->void:
 	velocity= Vector2(0,0)
-	$CollisionShape2D.disabled=true
-	$AttackComponent/AttackArea/CollisionArea.disabled=true
-	
+	collision_mask = 1 
+	set_collision_layer_value(3, false)
+	$AttackComponent.disable()
+	if $CollisionDamageComponent:
+		$CollisionDamageComponent.disable()
+	if $FlyComponent:
+		$FlyComponent.disable()
 	get_tree().call_group("live_group", "set_disabled", true)
 func _handle_direction()->void:
 	if !mode==Mode.ACTIVATED:
-		if direction!=0:
-			facing_direction= direction
+		if direction.x!=0:
+			facing_direction= direction.x
 	else:
 		if (player.global_position.x-global_position.x)>0:
 			player_direction=1
@@ -88,18 +98,21 @@ func _moving_action()->void:
 		velocity.x=0 
 		return
 	if direction:
-		velocity.x = direction * (current_speed)
+		velocity.x = direction.x * (current_speed)
 	else:
 		velocity.x = move_toward(velocity.x, 0, current_speed)
 func idle_mode()->void:
-	current_speed=IDLE_SPEED
-	if waiting:
-		direction=0
-		return
-	if global_position.x>start_x+patrol_distance and facing_direction==1:
-		wait_at_edge(-1)
-	if  global_position.x<start_x-patrol_distance  and facing_direction==-1:
-		wait_at_edge(1)
+	if initial_patrol==PATROL_STATE.PATROL:
+		current_speed=IDLE_SPEED
+		if waiting:
+			direction.x=0
+			return
+		if global_position.x>start_x+patrol_distance and facing_direction==1:
+			wait_at_edge(-1)
+		if  global_position.x<start_x-patrol_distance  and facing_direction==-1:
+			wait_at_edge(1)
+	else:
+		direction.x=0
 func activated_mode()->void:
 	if $AttackComponent.get_player_in_range() and can_attack :
 		attack_phase= Attack_Phase.PRE_ATTACK
@@ -115,9 +128,9 @@ func activated_mode()->void:
 		player_direction = -1
 
 	if player.global_position<global_position:
-		direction=-1
+		direction.x=-1
 	else:
-		direction=1
+		direction.x=1
 		
 	
 func wait_at_edge(new_direction):
@@ -127,9 +140,9 @@ func wait_at_edge(new_direction):
 func _on_edge_wait_timer_timeout() -> void:
 	waiting=false
 	
-	direction=next_direction
+	direction.x=next_direction
 	###防止timeout後又因為滿足條件又進入新的cycle
-	global_position.x += direction * 2
+	global_position.x += direction.x * 2
 
 
 func attack_action():
@@ -139,8 +152,7 @@ func attack_action():
 
 func _manage_state()->void:
 	if HP<=0:
-		$CollisionShape2D.disabled=true
-		state=State.DEAD
+		dead=true
 	if can_see_player():
 		mode=Mode.ACTIVATED
 	else:
@@ -154,14 +166,14 @@ func _manage_state()->void:
 	
 		
 func strat_by_mode()->void:
-	if state==State.DAMAGED or state==State.DEAD:
+	if state==State.DAMAGED or dead:
 		return
 	if mode==Mode.IDLE:
 		idle_mode()
 	elif mode==Mode.ACTIVATED:
 		activated_mode()
 func _manage_animate()->void:
-	if state==State.DEAD:
+	if dead:
 		if $Animation.animation !=("dead"):
 			$Animation.play("dead")
 		return
@@ -231,19 +243,21 @@ func _on_damage_recovery_timer_timeout() -> void:
 
 
 func _on_hit_box_area_entered(area: Area2D) -> void:
-	if state==State.DEAD:
+	if dead:
 		return
 	if area.is_in_group("player_area") and area.name=="AttackArea":
 		
 		if area.global_position.x-global_position.x>0:
 			damaged_velocity=-damaged_velocity_scale
-			direction=1
+			direction.x=1
 		else:
 			damaged_velocity=damaged_velocity_scale
 
-			direction=-1
+			direction.x=-1
 		HP-=1
 		if HP<=0:
+			dead=true
+			_dead_action()
 			$Timers/CleanupTimer.start()
 		state = State.DAMAGED
 		damaged_count+=1

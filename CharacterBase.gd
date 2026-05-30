@@ -11,7 +11,6 @@ enum Locomotion{
 enum State{
 	DAMAGED,
 	NORMAL,
-	DEAD
 }
 enum Mode{
 	IDLE,
@@ -34,7 +33,7 @@ var attack_phase= Attack_Phase.NORMAL
 var parry_state = PARRY_STATE.NORMAL
 var facing_direction=1
 
-
+var dead =false
 
 @export var damaged_velocity_scale=10
 var damaged_velocity=0
