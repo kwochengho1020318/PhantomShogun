@@ -2,7 +2,6 @@ extends CharacterBase
 
 var speed=300
 var jump_speed=350
-@export var hp = 10
 @export var valid_parry_time_msec = 300
 
 
@@ -21,9 +20,6 @@ var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	for obj in get_tree().get_nodes_in_group("enemy_area"):
-		if obj.has_signal("hit"):
-			obj.hit.connect(_on_hit)
 	get_input()
 	locomotion_state=Locomotion.IDLE
 	
@@ -43,13 +39,15 @@ func _process(_delta: float) -> void:
 	_manage_animate()
 func get_input():
 	direction= Input.get_axis("move_left","move_right")
+	
 	jump_action = Input.is_action_just_pressed("jump")
-	attack_action=Input.is_action_just_pressed("attack")
+	if state !=State.DAMAGED:
+		attack_action=Input.is_action_just_pressed("attack")
 	parry_action = Input.is_action_pressed("parry")
 	parry_start = Input.is_action_just_pressed("parry")
 func _moving_action()->void:
 	if state==State.DAMAGED:
-		velocity.x=damaged_velocity
+		velocity=damaged_velocity
 		return
 	
 	# update velocity ,skip if attacking 
@@ -67,11 +65,12 @@ func _moving_action()->void:
 	velocity.x=direction*speed
 
 func _physics_process(delta: float) -> void:
-	if not is_on_floor():
-		velocity.y += gravity * delta
+	
 	_character_action(delta)
 	if is_on_floor() and !can_jump:
 		$Timers/JumpCooldownTimer.start()	
+	if not is_on_floor():
+		velocity.y += gravity * delta
 	move_and_slide()
 func _character_action(_delta)->void:
 	get_input()
@@ -164,6 +163,8 @@ func _on_animation_animation_finished() -> void:
 		attack_phase=Attack_Phase.NORMAL
 		can_attack=true
 	if $Animation.animation.begins_with("parry_success"):
+		Global.is_player_parrying = false
+		
 		parry_state= PARRY_STATE.NORMAL
 		
 
@@ -172,33 +173,26 @@ func _on_attack_timer_timeout() -> void:
 	attack_count=0
 
 
-func _on_hit_box_area_entered(area: Area2D) -> void:
-	
-	if area.name=="AttackArea" and area.is_in_group("enemy_area"):
-		if parry_state==PARRY_STATE.PARRYING and Time.get_ticks_msec()-parry_start_time<=valid_parry_time_msec:
-			parry_state= PARRY_STATE.PARRY_SUCCESS
-			var enemy = area.get_parent()
-			if area.global_position.x>global_position.x:
-				global_position.x-=5
-				enemy.global_position.x+=5
-			else:
-				global_position.x+=5
-				enemy.global_position.x-=5
-			return
-		if area.global_position.x>global_position.x:
-			damaged_velocity=-damaged_velocity_scale
-		else:
-			damaged_velocity=damaged_velocity_scale
-		state=State.DAMAGED
+
 		
-		$Timers/DamageRecoveryTimer.start()
 
 
 func _on_damage_recovery_timer_timeout() -> void:
 	state=State.NORMAL
-func _on_hit()->void:
-	state=State.DAMAGED
-	$Timers/DamageRecoveryTimer.start()
+	Global.is_player_damaged = false
+	
+func _on_hit(damage,damage_velocity)->void:
+	if parry_state==PARRY_STATE.PARRYING and Time.get_ticks_msec()-parry_start_time<=valid_parry_time_msec:
+		parry_state= PARRY_STATE.PARRY_SUCCESS
+		Global.is_player_parrying = true
+	else:
+		print(damage)
+		damaged_velocity= damage_velocity
+		state=State.DAMAGED
+		Global.is_player_damaged = true
+		attack_phase= Attack_Phase.NORMAL
+
+		$Timers/DamageRecoveryTimer.start()
 
 func _on_jump_cooldown_timer_timeout() -> void:
 	can_jump = true

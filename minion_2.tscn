@@ -171,7 +171,9 @@ wait_time = 2.0
 [node name="RandomActionTimer" type="Timer" parent="Timers" parent_id_path=PackedInt32Array(541122291) index="4" unique_id=1387161173]
 autostart = true
 
-[node name="CollisionShape2D" parent="HitBox" parent_id_path=PackedInt32Array(1151708614) index="0" unique_id=1122191259]
+[node name="HitBox" parent="." index="4" unique_id=1151708614 groups=["enemy_area"]]
+
+[node name="CollisionShape2D" parent="HitBox" index="0" unique_id=1122191259]
 shape = SubResource("RectangleShape2D_xsp7l")
 
 [node name="CollisionArea" parent="AttackComponent/AttackArea" parent_id_path=PackedInt32Array(873897264, 602289161) index="0" unique_id=1742151429]

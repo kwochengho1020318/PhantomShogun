@@ -1,6 +1,6 @@
-extends Node2D
+extends DamageComponentBase
 class_name Attack_Component
-
+signal hit
 
 var player_in_range = false
 var facing = 1
@@ -15,20 +15,32 @@ func area_facing(direction)->void:
 	$DetectArea/CollisionArea.position.x = facing*abs($AttackArea/CollisionArea.position.x)
 func area_valid(v)->void:
 	
-	$AttackArea/CollisionArea.disabled=v
+	$AttackArea/CollisionArea.disabled=!v
 	
 func get_boundary()->float:
 	return abs(capsule.position.x+facing*(shape.radius))
-func _on_detect_area_body_entered(body: Node2D) -> void:
-	if body.name=="Player":
-		
-		player_in_range= true
+
 		
 func disable() ->void:
 	queue_free()
 
-func _on_detect_area_body_exited(body: Node2D) -> void:
-	if body.name=="Player":
-		player_in_range= false
+
+func _condition(area)->bool:
+	return area.name =="HitBox" and area.get_parent().name=="Player"
+
 func get_player_in_range()->bool:
 	return player_in_range
+
+func _on_attack_area_area_entered(area: Area2D) -> void:
+	_damage(area)
+
+
+func _on_detect_area_area_entered(area: Area2D) -> void:
+	if area.get_parent().name == "Player" and area.name =="HitBox":
+		
+		player_in_range= true
+
+
+func _on_detect_area_area_exited(area: Area2D) -> void:
+	if area.get_parent().name == "Player"and area.name =="HitBox":
+		player_in_range= false

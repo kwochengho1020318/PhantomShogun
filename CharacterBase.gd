@@ -6,7 +6,8 @@ enum Locomotion{
 	RUN,
 	IDLE,
 	damaged,
-	JUMP
+	JUMP,
+	CLIMB
 }
 enum State{
 	DAMAGED,
@@ -32,11 +33,15 @@ var state = State.NORMAL
 var attack_phase= Attack_Phase.NORMAL
 var parry_state = PARRY_STATE.NORMAL
 var facing_direction=1
+var is_on_ladder=0
+
+
 
 var dead =false
 
 @export var damaged_velocity_scale=10
-var damaged_velocity=0
+@export var HP = 5
+var damaged_velocity
 var damaged_count=0
 
 func _character_action(delta)->void:
@@ -48,4 +53,6 @@ func _handle_direction()->void:
 func _manage_state()->void:
 	pass
 func _manage_animate()->void:
+	pass
+func _on_hit(damage,damage_velocity)->void:
 	pass

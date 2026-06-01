@@ -11,7 +11,7 @@ func _ready() -> void:
 func _moving_action()->void:
 	if state==State.DAMAGED:
 		
-		velocity.x=damaged_velocity
+		velocity=damaged_velocity
 		return
 	if attack_phase!=Attack_Phase.NORMAL:
 		velocity.x=0 
@@ -27,11 +27,14 @@ func activated_mode()->void:
 	if player==null:
 		print("no player!!")
 	var dist = global_position.distance_to(player.global_position)
+	var dir = (player.global_position-global_position).normalized()
 	if (player.global_position.x-global_position.x)>0:
 		player_direction=1
 	else:
 		player_direction = -1
-	if dist>60:
+	if Global.is_player_damaged:
+		direction = -dir*0.3
+	elif dist>30 :
 		direction = Vector2(player_direction,((player.global_position.y-global_position.y)/30)).normalized()
 	
 	else:

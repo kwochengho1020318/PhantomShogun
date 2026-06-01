@@ -4,7 +4,6 @@ class_name enemy
 @export var patrol_distance := 100.0
 @export var SPEED :=100
 @export var IDLE_SPEED:=50
-@export var HP=5
 @export var initial_patrol = PATROL_STATE.PATROL
 
 
@@ -34,6 +33,7 @@ var can_attack= true
 
 
 func _ready() -> void:
+
 	start_x = global_position.x
 	HP=5
 	current_speed= IDLE_SPEED
@@ -92,7 +92,7 @@ func _handle_direction()->void:
 func _moving_action()->void:
 	if state==State.DAMAGED:
 		
-		velocity.x=damaged_velocity
+		velocity=damaged_velocity
 		return
 	if attack_phase!=Attack_Phase.NORMAL:
 		velocity.x=0 
@@ -126,8 +126,10 @@ func activated_mode()->void:
 		player_direction=1
 	else:
 		player_direction = -1
-
-	if player.global_position<global_position:
+	
+	if Global.is_player_busy():
+		direction.x = 0
+	elif player.global_position<global_position:
 		direction.x=-1
 	else:
 		direction.x=1
@@ -146,7 +148,7 @@ func _on_edge_wait_timer_timeout() -> void:
 
 
 func attack_action():
-	$AttackComponent.area_valid(!attack_phase==Attack_Phase.ATTACKING)
+	$AttackComponent.area_valid(attack_phase==Attack_Phase.ATTACKING)
 		
 
 
@@ -242,26 +244,8 @@ func _on_damage_recovery_timer_timeout() -> void:
 	state= State.NORMAL
 
 
-func _on_hit_box_area_entered(area: Area2D) -> void:
-	if dead:
-		return
-	if area.is_in_group("player_area") and area.name=="AttackArea":
-		
-		if area.global_position.x-global_position.x>0:
-			damaged_velocity=-damaged_velocity_scale
-			direction.x=1
-		else:
-			damaged_velocity=damaged_velocity_scale
 
-			direction.x=-1
-		HP-=1
-		if HP<=0:
-			dead=true
-			_dead_action()
-			$Timers/CleanupTimer.start()
-		state = State.DAMAGED
-		damaged_count+=1
-		$Timers/DamageRecoveryTimer.start()
+		
 
 
 func _on_animation_animation_finished() -> void:
@@ -276,7 +260,21 @@ func _on_animation_animation_finished() -> void:
 
 
 
+func _on_hit(damage,damage_velocity)->void:
+	if dead:
+		return
 
+	HP-=damage
+	
+	damaged_velocity= damage_velocity
+	if HP<=0:
+		dead=true
+		_dead_action()
+		$Timers/CleanupTimer.start()
+	attack_phase= Attack_Phase.NORMAL
+	state = State.DAMAGED
+	damaged_count+=1
+	$Timers/DamageRecoveryTimer.start()
 
 
 

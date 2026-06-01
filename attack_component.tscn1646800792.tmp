@@ -12,8 +12,6 @@ height = 52.0
 
 [node name="AttackComponent" type="Node2D" unique_id=873897264 groups=["enemy_area"]]
 script = ExtResource("1_3dc41")
-damage = null
-knockback_velocity = null
 
 [node name="AttackArea" type="Area2D" parent="." unique_id=602289161 groups=["enemy_area"]]
 collision_layer = 4
