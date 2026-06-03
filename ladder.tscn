@@ -4,9 +4,9 @@
 [ext_resource type="Script" uid="uid://b6qqfdwxkuk6n" path="res://ladder.gd" id="1_lqhsa"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_lqhsa"]
-size = Vector2(63, 120)
+size = Vector2(63, 131)
 
-[node name="Ladder" type="Node2D" unique_id=2023151328]
+[node name="LadderBase" type="Node2D" unique_id=2023151328]
 script = ExtResource("1_lqhsa")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1558791759]
@@ -15,10 +15,12 @@ scale = Vector2(1, 1.0078125)
 texture = ExtResource("1_cq4ai")
 
 [node name="Area2D" type="Area2D" parent="." unique_id=729450519]
+collision_mask = 7
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D" unique_id=1472896039]
-position = Vector2(-0.5, -1)
+position = Vector2(-0.5, -0.5)
 shape = SubResource("RectangleShape2D_lqhsa")
 
+[connection signal="area_entered" from="Area2D" to="." method="_on_area_2d_area_entered"]
 [connection signal="body_entered" from="Area2D" to="." method="_on_area_2d_body_entered"]
 [connection signal="body_exited" from="Area2D" to="." method="_on_area_2d_body_exited"]

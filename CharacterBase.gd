@@ -34,13 +34,15 @@ var attack_phase= Attack_Phase.NORMAL
 var parry_state = PARRY_STATE.NORMAL
 var facing_direction=1
 var is_on_ladder=0
-
-
+var is_climbing=0
+var direction=Vector2(1,0)
+var interacted_object
 
 var dead =false
 
 @export var damaged_velocity_scale=10
 @export var HP = 5
+@export var climb_speed=100
 var damaged_velocity
 var damaged_count=0
 

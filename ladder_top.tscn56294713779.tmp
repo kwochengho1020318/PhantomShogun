@@ -1,0 +1,21 @@
+[gd_scene format=3 uid="uid://bi45bmiwsre4j"]
+
+[ext_resource type="PackedScene" uid="uid://bu12bp7ajabui" path="res://ladder.tscn" id="1_gaulj"]
+[ext_resource type="Script" uid="uid://b4ur3g2fnco0u" path="res://ladder_top.gd" id="2_66xrq"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_gaulj"]
+size = Vector2(63, 7)
+
+[node name="LadderTop" unique_id=2023151328 instance=ExtResource("1_gaulj")]
+script = ExtResource("2_66xrq")
+
+[node name="Area2D" parent="." index="1" unique_id=729450519]
+visible = false
+
+[node name="TopArea" type="Area2D" parent="." index="2" unique_id=1825107243]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="TopArea" index="0" unique_id=93665506]
+position = Vector2(-1, -51)
+shape = SubResource("RectangleShape2D_gaulj")
+
+[connection signal="body_exited" from="TopArea" to="." method="_on_top_area_body_exited"]

@@ -15,7 +15,6 @@ enum  PATROL_STATE{
 var current_speed= IDLE_SPEED
 var start_x
 
-var direction=Vector2(1,0)
 var waiting=false
 var next_direction=0
 

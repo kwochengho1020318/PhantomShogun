@@ -1,0 +1,82 @@
+[gd_scene format=3 uid="uid://dgcwk2e4biyf6"]
+
+[ext_resource type="Script" uid="uid://blrwg3k2gppeq" path="res://treasurebox.gd" id="1_2prb5"]
+[ext_resource type="Texture2D" uid="uid://bsw0gt0c4xvqe" path="res://assets/player/TreasureBox.png" id="1_6dggb"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2prb5"]
+atlas = ExtResource("1_6dggb")
+region = Rect2(0, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_mmw1m"]
+atlas = ExtResource("1_6dggb")
+region = Rect2(0, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4b10k"]
+atlas = ExtResource("1_6dggb")
+region = Rect2(64, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_620yg"]
+atlas = ExtResource("1_6dggb")
+region = Rect2(128, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_kljgj"]
+atlas = ExtResource("1_6dggb")
+region = Rect2(192, 0, 64, 64)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_kljgj"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2prb5")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_mmw1m")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_4b10k")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_620yg")
+}],
+"loop": false,
+"name": &"open",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_kljgj")
+}],
+"loop": true,
+"name": &"opened",
+"speed": 5.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_mmw1m"]
+size = Vector2(65, 40)
+
+[node name="Treasurebox" type="Node2D" unique_id=1582849357]
+script = ExtResource("1_2prb5")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1476962712]
+position = Vector2(1.9999981, -7)
+scale = Vector2(1.578125, 1.96875)
+sprite_frames = SubResource("SpriteFrames_kljgj")
+animation = &"opened"
+autoplay = "default"
+
+[node name="InteractBox" type="Area2D" parent="." unique_id=1319794100]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="InteractBox" unique_id=319284180]
+position = Vector2(2.5, 4)
+shape = SubResource("RectangleShape2D_mmw1m")
+
+[node name="Timer" type="Timer" parent="." unique_id=150936354]
+wait_time = 2.0
+
+[connection signal="animation_finished" from="AnimatedSprite2D" to="." method="_on_animated_sprite_2d_animation_finished"]
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]

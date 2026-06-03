@@ -1,0 +1,23 @@
+[gd_scene format=3 uid="uid://ctmf6u7w78n2l"]
+
+[ext_resource type="PackedScene" uid="uid://bu12bp7ajabui" path="res://ladder.tscn" id="1_iueq7"]
+[ext_resource type="Script" uid="uid://ddheoutg4ehvf" path="res://ladder_bottom.gd" id="2_bdcpe"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_iueq7"]
+size = Vector2(60, 9)
+
+[node name="LadderBottom" unique_id=2023151328 instance=ExtResource("1_iueq7")]
+script = ExtResource("2_bdcpe")
+
+[node name="Area2D" parent="." index="1" unique_id=729450519]
+visible = false
+
+[node name="BottomArea" type="Area2D" parent="." index="2" unique_id=1288789754]
+collision_mask = 7
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="BottomArea" index="0" unique_id=1954158761]
+position = Vector2(0, 53.5)
+shape = SubResource("RectangleShape2D_iueq7")
+
+[connection signal="body_entered" from="BottomArea" to="." method="_on_bottom_area_body_entered"]
+[connection signal="body_exited" from="BottomArea" to="." method="_on_bottom_area_body_exited"]

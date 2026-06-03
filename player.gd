@@ -6,7 +6,7 @@ var jump_speed=350
 
 
 ##input
-var direction
+var interact_action
 var jump_action
 var attack_action
 var parry_action
@@ -17,6 +17,9 @@ var can_attack=true
 var can_jump = true
 var attack_count=0
 var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
+
+var near_interactableObject
+
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -38,11 +41,12 @@ func _process(_delta: float) -> void:
 	_manage_state()
 	_manage_animate()
 func get_input():
-	direction= Input.get_axis("move_left","move_right")
-	
+	direction=Vector2(Input.get_axis("move_left","move_right"),Input.get_axis("move_up","move_down"))
+	interact_action = Input.is_action_just_pressed("interact")
 	jump_action = Input.is_action_just_pressed("jump")
 	if state !=State.DAMAGED:
 		attack_action=Input.is_action_just_pressed("attack")
+	
 	parry_action = Input.is_action_pressed("parry")
 	parry_start = Input.is_action_just_pressed("parry")
 func _moving_action()->void:
@@ -62,40 +66,63 @@ func _moving_action()->void:
 		can_jump= false
 		locomotion_state=Locomotion.JUMP
 		velocity.y=-jump_speed
-	velocity.x=direction*speed
+	if locomotion_state== Locomotion.CLIMB:
+		velocity=Vector2(0,direction.y*climb_speed)
+		return
+	velocity.x=direction.x*speed
 
 func _physics_process(delta: float) -> void:
 	
 	_character_action(delta)
 	if is_on_floor() and !can_jump:
 		$Timers/JumpCooldownTimer.start()	
-	if not is_on_floor():
+	if not is_on_floor() and !is_climbing:
 		velocity.y += gravity * delta
 	move_and_slide()
 func _character_action(_delta)->void:
 	get_input()
+	if near_interactableObject and interact_action:
+		near_interactableObject.open()
 	_moving_action()
 	_handle_direction()
 
 func _handle_direction()->void:
-	if direction!=0 and state==State.NORMAL and attack_phase== Attack_Phase.NORMAL:
-		$Animation.flip_h = direction<0
+	if direction.x!=0 and state==State.NORMAL and attack_phase== Attack_Phase.NORMAL:
+		$Animation.flip_h = direction.x<0
 	if $Animation.flip_h==true:
 		facing_direction=-1
 	else:
 		facing_direction=1
 	$AttackComponent.area_facing(facing_direction)
+func manage_locomotion()->void:
+	if is_on_floor():
+		if is_on_ladder :
+			if(direction.y!=0):
+				position.x = interacted_object.global_position.x
+				set_collision_mask_value(1,false)
+				is_climbing=true
+		if velocity.x!=0:
+			locomotion_state=Locomotion.RUN
+		else:
+			locomotion_state=Locomotion.IDLE
+		return
+	else:
+		if is_climbing: 
+			locomotion_state= Locomotion.CLIMB	
+		else:
+			locomotion_state=Locomotion.JUMP
 func _manage_state()->void:
 	var v=velocity.length()
+	manage_locomotion()
 	
 	
+		
+		
 	
-	if locomotion_state==Locomotion.JUMP:
-		if is_on_floor():
-			locomotion_state=Locomotion.IDLE
-			
 			
 	if  attack_action and  can_attack:
+		if locomotion_state==Locomotion.CLIMB:
+			return
 		attack_phase=Attack_Phase.ATTACKING
 		attack_count+=1
 		return
@@ -103,12 +130,11 @@ func _manage_state()->void:
 	# manage parry state
 	manage_parry_state()
 		
+	
+	
 		
-	if(v==0):
-		locomotion_state=Locomotion.IDLE
-		return
-	if is_on_floor() and velocity.x!=0:
-		locomotion_state=Locomotion.RUN
+func set_IDLE()->void:
+	locomotion_state= Locomotion.CLIMB
 func manage_parry_state()->void:
 	if attack_phase!=Attack_Phase.NORMAL:
 		parry_state = PARRY_STATE.NORMAL
@@ -152,8 +178,13 @@ func _manage_animate()->void:
 		Locomotion.JUMP:
 			if $Animation.animation != "jump":
 				$Animation.play("jump")
-			
-
+		Locomotion.CLIMB:
+			if direction.y==0:
+				if $Animation.animation != "climb_idle":
+					$Animation.play("climb_idle")	
+			else:
+				if $Animation.animation != "climb_walk":
+					$Animation.play("climb_walk")	
 
 func _on_animation_animation_finished() -> void:
 	var regex = RegEx.new()
@@ -198,3 +229,18 @@ func _on_jump_cooldown_timer_timeout() -> void:
 	can_jump = true
 
 	
+
+
+func _on_interact_box_area_entered(area: Area2D) -> void:
+	
+	if area.name =="InteractBox" :
+		near_interactableObject = area.get_parent()
+		
+
+func _on_interact_object_box_area_exited(area: Area2D) -> void:
+	if area.name =="InteractBox":
+		near_interactableObject =null
+
+
+func _on_interact_box_area_exited(area: Area2D) -> void:
+	pass # Replace with function body.
