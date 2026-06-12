@@ -114,8 +114,10 @@ func idle_mode()->void:
 		direction.x=0
 func activated_mode()->void:
 	if $AttackComponent.get_player_in_range() and can_attack :
+		can_attack = false
+		$Timers/AttackCoolDownTimer.start()
+
 		attack_phase= Attack_Phase.PRE_ATTACK
-		can_attack= false
 		return
 	current_speed=SPEED
 	if player==null:
@@ -253,7 +255,6 @@ func _on_animation_animation_finished() -> void:
 		return
 	if attack_phase==Attack_Phase.ATTACKING:
 		attack_phase=Attack_Phase.NORMAL
-		$Timers/AttackCoolDownTimer.start()
 		return
 		
 
@@ -266,6 +267,8 @@ func _on_hit(damage,damage_velocity)->void:
 	HP-=damage
 	
 	damaged_velocity= damage_velocity
+	var from = -sign(damage_velocity.x)
+	direction = Vector2(from,0)
 	if HP<=0:
 		dead=true
 		_dead_action()
@@ -283,5 +286,5 @@ func _on_cleanup_timer_timeout() -> void:
 
 
 func _on_attack_cool_down_timer_timeout() -> void:
-	
 	can_attack= true
+	

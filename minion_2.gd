@@ -7,6 +7,7 @@ func activated_mode()->void:
 	if $AttackComponent.get_player_in_range() and can_attack :
 		attack_phase= Attack_Phase.PRE_ATTACK
 		can_attack= false
+		$Timers/AttackCoolDownTimer.start()
 		return
 	current_speed=SPEED
 	if player==null:

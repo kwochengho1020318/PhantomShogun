@@ -299,6 +299,14 @@ animations = [{
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_hqtel"]
 height = 46.0
 
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_sweqy"]
+radius = 13.0
+height = 36.0
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_2hs0m"]
+radius = 16.0
+height = 36.0
+
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_sweqy"]
 size = Vector2(48, 53)
 
@@ -311,7 +319,7 @@ script = ExtResource("1_onrkg")
 position = Vector2(0, -0.5)
 scale = Vector2(1, 1.015625)
 sprite_frames = SubResource("SpriteFrames_4flbx")
-animation = &"climb_idle"
+animation = &"attack_3"
 autoplay = "idle"
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="." unique_id=1235530960]
@@ -348,7 +356,16 @@ script = ExtResource("5_sweqy")
 damage = 1
 knockback_velocity = 0.5
 
+[node name="CollisionArea" parent="AttackComponent/AttackArea" parent_id_path=PackedInt32Array(873897264, 602289161) index="0" unique_id=1742151429]
+position = Vector2(22, -2)
+shape = SubResource("CapsuleShape2D_sweqy")
+
+[node name="CollisionArea" parent="AttackComponent/DetectArea" parent_id_path=PackedInt32Array(873897264, 1862480575) index="0" unique_id=1134613144]
+position = Vector2(-94, -1)
+shape = SubResource("CapsuleShape2D_2hs0m")
+
 [node name="InteractBox" type="Area2D" parent="." unique_id=34856022]
+visible = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="InteractBox" unique_id=1894714659]
 position = Vector2(0, 0.5)
@@ -361,3 +378,5 @@ shape = SubResource("RectangleShape2D_sweqy")
 [connection signal="area_entered" from="HitBox" to="." method="_on_hit_box_area_entered"]
 [connection signal="area_entered" from="InteractBox" to="." method="_on_interact_box_area_entered"]
 [connection signal="area_exited" from="InteractBox" to="." method="_on_interact_box_area_exited"]
+
+[editable path="AttackComponent"]

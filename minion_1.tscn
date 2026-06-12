@@ -171,6 +171,8 @@ one_shot = true
 wait_time = 0.5
 
 [node name="AttackCoolDownTimer" type="Timer" parent="Timers" unique_id=1444358846]
+wait_time = 1.5
+one_shot = true
 
 [node name="CleanupTimer" type="Timer" parent="Timers" unique_id=969813998]
 wait_time = 4.345000000000001
