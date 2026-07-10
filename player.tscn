@@ -161,7 +161,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_n7ghd")
 }],
-"loop": false,
+"loop": 0,
 "name": &"attack_1",
 "speed": 25.0
 }, {
@@ -187,7 +187,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_op7ga")
 }],
-"loop": false,
+"loop": 0,
 "name": &"attack_2",
 "speed": 20.0
 }, {
@@ -207,7 +207,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_7hik5")
 }],
-"loop": false,
+"loop": 0,
 "name": &"attack_3",
 "speed": 15.0
 }, {
@@ -215,7 +215,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_tkwlq")
 }],
-"loop": true,
+"loop": 1,
 "name": &"climb_idle",
 "speed": 5.0
 }, {
@@ -226,18 +226,15 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_hiqhm")
 }],
-"loop": true,
+"loop": 1,
 "name": &"climb_walk",
 "speed": 5.0
 }, {
 "frames": [{
-"duration": 1.0,
-"texture": null
-}, {
 "duration": 4.0,
 "texture": SubResource("AtlasTexture_2wuci")
 }],
-"loop": false,
+"loop": 0,
 "name": &"damaged",
 "speed": 5.0
 }, {
@@ -248,7 +245,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_pylmc")
 }],
-"loop": true,
+"loop": 1,
 "name": &"idle",
 "speed": 1.0
 }, {
@@ -256,7 +253,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_qtqh7")
 }],
-"loop": true,
+"loop": 1,
 "name": &"jump",
 "speed": 5.0
 }, {
@@ -264,7 +261,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_iruf7")
 }],
-"loop": false,
+"loop": 0,
 "name": &"parry_success1",
 "speed": 2.0
 }, {
@@ -272,7 +269,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_j5n4i")
 }],
-"loop": false,
+"loop": 0,
 "name": &"parry_success2",
 "speed": 2.0
 }, {
@@ -280,7 +277,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_634y6")
 }],
-"loop": true,
+"loop": 1,
 "name": &"parrying",
 "speed": 5.0
 }, {
@@ -291,7 +288,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_5tmop")
 }],
-"loop": true,
+"loop": 1,
 "name": &"walking",
 "speed": 5.0
 }]
@@ -319,7 +316,7 @@ script = ExtResource("1_onrkg")
 position = Vector2(0, -0.5)
 scale = Vector2(1, 1.015625)
 sprite_frames = SubResource("SpriteFrames_4flbx")
-animation = &"attack_3"
+animation = &"damaged"
 autoplay = "idle"
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="." unique_id=1235530960]

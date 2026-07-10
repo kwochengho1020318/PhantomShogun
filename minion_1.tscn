@@ -62,29 +62,23 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_6gngy")
 }],
-"loop": false,
+"loop": 0,
 "name": &"attack_1",
 "speed": 10.0
 }, {
 "frames": [{
-"duration": 1.0,
-"texture": null
-}, {
 "duration": 4.0,
 "texture": SubResource("AtlasTexture_p2t45")
 }],
-"loop": true,
+"loop": 1,
 "name": &"damaged_1",
 "speed": 5.0
 }, {
 "frames": [{
-"duration": 1.0,
-"texture": null
-}, {
 "duration": 4.0,
 "texture": SubResource("AtlasTexture_8y1gk")
 }],
-"loop": true,
+"loop": 1,
 "name": &"damaged_2",
 "speed": 5.0
 }, {
@@ -92,7 +86,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_5ddvl")
 }],
-"loop": true,
+"loop": 1,
 "name": &"dead",
 "speed": 5.0
 }, {
@@ -103,7 +97,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_g6u03")
 }],
-"loop": true,
+"loop": 1,
 "name": &"idle",
 "speed": 1.0
 }, {
@@ -117,7 +111,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_j6ywg")
 }],
-"loop": false,
+"loop": 0,
 "name": &"pre_attack_1",
 "speed": 10.0
 }, {
@@ -131,7 +125,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_3p6yy")
 }],
-"loop": true,
+"loop": 1,
 "name": &"walk",
 "speed": 5.0
 }]
@@ -153,7 +147,7 @@ script = ExtResource("1_3ye6f")
 
 [node name="Animation" type="AnimatedSprite2D" parent="." unique_id=824132791]
 sprite_frames = SubResource("SpriteFrames_5ddvl")
-animation = &"attack_1"
+animation = &"damaged_2"
 autoplay = "idle"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=971624223]

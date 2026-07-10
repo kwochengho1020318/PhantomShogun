@@ -19,9 +19,7 @@ func _on_area_2d_body_entered(body: Node2D) -> void:
 
 		body.is_on_ladder=true
 
-func _on_area_2d_body_exited(body: Node2D) -> void:
-	if body.name =="Player" and is_terminal:
-		exit(body)
+
 func exit(body)->void:
 		body.is_on_ladder=false
 		body.is_climbing=false

@@ -51,7 +51,7 @@ func get_input():
 	parry_start = Input.is_action_just_pressed("parry")
 func _moving_action()->void:
 	if state==State.DAMAGED:
-		velocity=damaged_velocity
+		
 		return
 	
 	# update velocity ,skip if attacking 
@@ -59,8 +59,9 @@ func _moving_action()->void:
 		velocity.x=0
 		return
 	if parry_state== PARRY_STATE.PARRYING and locomotion_state!=Locomotion.JUMP:
-		velocity.x=0
-		return
+		speed=150
+	else:
+		speed=300
 	#jump,updating jump state
 	if is_on_floor() and jump_action and can_jump:
 		can_jump= false
@@ -97,7 +98,7 @@ func _handle_direction()->void:
 func manage_locomotion()->void:
 	if is_on_floor():
 		if is_on_ladder :
-			if(direction.y!=0):
+			if interact_action:
 				position.x = interacted_object.global_position.x
 				set_collision_mask_value(1,false)
 				is_climbing=true
@@ -217,8 +218,7 @@ func _on_hit(damage,damage_velocity)->void:
 		parry_state= PARRY_STATE.PARRY_SUCCESS
 		Global.is_player_parrying = true
 	else:
-		print(damage)
-		damaged_velocity= damage_velocity
+		velocity= damage_velocity
 		state=State.DAMAGED
 		Global.is_player_damaged = true
 		attack_phase= Attack_Phase.NORMAL

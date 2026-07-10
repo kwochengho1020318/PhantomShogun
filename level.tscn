@@ -12,6 +12,7 @@
 [ext_resource type="PackedScene" uid="uid://ctmf6u7w78n2l" path="res://ladder_bottom.tscn" id="6_8cye3"]
 [ext_resource type="PackedScene" uid="uid://bi45bmiwsre4j" path="res://ladder_top.tscn" id="7_2orkt"]
 [ext_resource type="PackedScene" uid="uid://dgcwk2e4biyf6" path="res://treasurebox.tscn" id="8_aicyk"]
+[ext_resource type="PackedScene" uid="uid://suh87futhpap" path="res://skeleton_boss.tscn" id="13_8b0r0"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_oi3di"]
 texture = ExtResource("2_vonw3")
@@ -1316,7 +1317,7 @@ is_terminal = true
 position = Vector2(3640, 534)
 
 [node name="Player" parent="." unique_id=265471943 instance=ExtResource("1_u52ul")]
-position = Vector2(607.00024, 346)
+position = Vector2(4246, 902)
 scale = Vector2(1.5, 1.5)
 
 [node name="minions" type="Node2D" parent="." unique_id=1694234761]
@@ -1335,3 +1336,6 @@ position = Vector2(2904, 471)
 
 [node name="minion4" parent="minions" unique_id=785041502 instance=ExtResource("5_f2txt")]
 position = Vector2(4418, 553)
+
+[node name="skeleton_boss" parent="." unique_id=1779020005 instance=ExtResource("13_8b0r0")]
+position = Vector2(5315, 528)

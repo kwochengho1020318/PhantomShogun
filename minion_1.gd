@@ -91,7 +91,7 @@ func _handle_direction()->void:
 func _moving_action()->void:
 	if state==State.DAMAGED:
 		
-		velocity=damaged_velocity
+		
 		return
 	if attack_phase!=Attack_Phase.NORMAL:
 		velocity.x=0 
@@ -120,8 +120,6 @@ func activated_mode()->void:
 		attack_phase= Attack_Phase.PRE_ATTACK
 		return
 	current_speed=SPEED
-	if player==null:
-		print("no player!!")
 	var dist = global_position.distance_to(player.global_position)
 	if (player.global_position.x-global_position.x)>0:
 		player_direction=1
@@ -266,7 +264,7 @@ func _on_hit(damage,damage_velocity)->void:
 
 	HP-=damage
 	
-	damaged_velocity= damage_velocity
+	velocity= damage_velocity
 	var from = -sign(damage_velocity.x)
 	direction = Vector2(from,0)
 	if HP<=0:
