@@ -1317,7 +1317,7 @@ is_terminal = true
 position = Vector2(3640, 534)
 
 [node name="Player" parent="." unique_id=265471943 instance=ExtResource("1_u52ul")]
-position = Vector2(4246, 902)
+position = Vector2(5018, 542.00006)
 scale = Vector2(1.5, 1.5)
 
 [node name="minions" type="Node2D" parent="." unique_id=1694234761]

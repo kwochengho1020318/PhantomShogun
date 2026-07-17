@@ -62,6 +62,42 @@ region = Rect2(4096, 0, 512, 512)
 atlas = ExtResource("4_5gmxn")
 region = Rect2(4608, 0, 512, 512)
 
+[sub_resource type="AtlasTexture" id="AtlasTexture_hhm1b"]
+atlas = ExtResource("4_5gmxn")
+region = Rect2(5120, 0, 512, 512)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ychie"]
+atlas = ExtResource("4_5gmxn")
+region = Rect2(5632, 0, 512, 512)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_nj7y8"]
+atlas = ExtResource("4_5gmxn")
+region = Rect2(3584, 0, 512, 512)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_vls4w"]
+atlas = ExtResource("4_5gmxn")
+region = Rect2(4096, 0, 512, 512)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_crp2y"]
+atlas = ExtResource("4_5gmxn")
+region = Rect2(4608, 0, 512, 512)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_v1nsv"]
+atlas = ExtResource("4_5gmxn")
+region = Rect2(6656, 0, 512, 512)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_76oij"]
+atlas = ExtResource("4_5gmxn")
+region = Rect2(7168, 0, 512, 512)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4qyke"]
+atlas = ExtResource("4_5gmxn")
+region = Rect2(7680, 0, 512, 512)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_7u5qb"]
+atlas = ExtResource("4_5gmxn")
+region = Rect2(6144, 0, 512, 512)
+
 [sub_resource type="AtlasTexture" id="AtlasTexture_0xm35"]
 atlas = ExtResource("4_5gmxn")
 region = Rect2(1024, 0, 512, 512)
@@ -162,6 +198,53 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
+"texture": SubResource("AtlasTexture_hhm1b")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ychie")
+}],
+"loop": 0,
+"name": &"slash1_attack",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 5.0,
+"texture": SubResource("AtlasTexture_nj7y8")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_vls4w")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_crp2y")
+}],
+"loop": 0,
+"name": &"slash1_pre_attack",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_v1nsv")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_76oij")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_4qyke")
+}],
+"loop": 0,
+"name": &"slash2_attack",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 5.0,
+"texture": SubResource("AtlasTexture_7u5qb")
+}],
+"loop": 0,
+"name": &"slash2_pre_attack",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
 "texture": SubResource("AtlasTexture_0xm35")
 }, {
 "duration": 1.0,
@@ -204,13 +287,22 @@ height = 146.0
 radius = 39.0
 height = 124.0
 
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_0xm35"]
+radius = 43.0
+height = 86.0
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_dpjx2"]
+radius = 40.0
+height = 80.0
+
 [node name="skeleton_boss" unique_id=665056483 instance=ExtResource("1_6mgr0")]
 script = ExtResource("2_asand")
 
 [node name="Animation" parent="." index="0" unique_id=824132791]
 scale = Vector2(0.952, 1)
 sprite_frames = SubResource("SpriteFrames_asand")
-animation = &"damaged_1"
+animation = &"slash1_attack"
+autoplay = ""
 
 [node name="CollisionShape2D" parent="." index="1" unique_id=971624223]
 shape = SubResource("CapsuleShape2D_eefh6")
@@ -233,6 +325,9 @@ position = Vector2(69, 5)
 shape = SubResource("CapsuleShape2D_2ev3t")
 
 [node name="SlashAttack" parent="AttackComponent" index="2" unique_id=286358786 instance=ExtResource("3_2ev3t")]
+visible = false
+damage = 1
+knockback_velocity = 1.0
 
 [node name="CollisionArea" parent="AttackComponent/SlashAttack/AttackArea" parent_id_path=PackedInt32Array(286358786, 602289161) index="0" unique_id=1742151429]
 position = Vector2(100, 4)
@@ -242,5 +337,18 @@ shape = SubResource("CapsuleShape2D_5gmxn")
 position = Vector2(71, 5)
 shape = SubResource("CapsuleShape2D_asand")
 
+[node name="Slash2Attack" parent="AttackComponent" index="3" unique_id=1705935384 instance=ExtResource("3_2ev3t")]
+damage = 1
+knockback_velocity = 1.0
+
+[node name="CollisionArea" parent="AttackComponent/Slash2Attack/AttackArea" parent_id_path=PackedInt32Array(1705935384, 602289161) index="0" unique_id=1742151429]
+position = Vector2(81, -17)
+shape = SubResource("CapsuleShape2D_0xm35")
+
+[node name="CollisionArea" parent="AttackComponent/Slash2Attack/DetectArea" parent_id_path=PackedInt32Array(1705935384, 1862480575) index="0" unique_id=1134613144]
+position = Vector2(72, -19)
+shape = SubResource("CapsuleShape2D_dpjx2")
+
 [editable path="AttackComponent"]
 [editable path="AttackComponent/SlashAttack"]
+[editable path="AttackComponent/Slash2Attack"]

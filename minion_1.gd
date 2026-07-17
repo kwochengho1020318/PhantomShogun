@@ -18,7 +18,7 @@ var start_x
 var waiting=false
 var next_direction=0
 
-
+var animation_playing
 
 
 

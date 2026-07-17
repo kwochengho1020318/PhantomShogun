@@ -6,9 +6,12 @@ var player_in_range = false
 var facing = 1
 var shape
 var capsule
+
 func _ready() -> void:
 	capsule = $AttackArea/CollisionArea
 	shape=capsule.shape as CapsuleShape2D
+	$AttackArea/CollisionArea.disabled=true
+
 func area_facing(direction)->void:
 	facing= direction
 	$AttackArea/CollisionArea.position.x = facing*abs($AttackArea/CollisionArea.position.x)
