@@ -337,6 +337,14 @@ wait_time = 0.5
 [node name="JumpCooldownTimer" type="Timer" parent="Timers" unique_id=2035040850]
 wait_time = 0.1
 
+[node name="AgilityRecoveryTimer" type="Timer" parent="Timers" unique_id=763693388]
+wait_time = 3.0
+one_shot = true
+
+[node name="AttackCooldownTimer" type="Timer" parent="Timers" unique_id=865843967]
+wait_time = 0.4
+one_shot = true
+
 [node name="Camera2D" type="Camera2D" parent="." unique_id=282622576]
 limit_left = 0
 
@@ -372,6 +380,8 @@ shape = SubResource("RectangleShape2D_sweqy")
 [connection signal="timeout" from="Timers/AttackTimer" to="." method="_on_attack_timer_timeout"]
 [connection signal="timeout" from="Timers/DamageRecoveryTimer" to="." method="_on_damage_recovery_timer_timeout"]
 [connection signal="timeout" from="Timers/JumpCooldownTimer" to="." method="_on_jump_cooldown_timer_timeout"]
+[connection signal="timeout" from="Timers/AgilityRecoveryTimer" to="." method="_on_agility_recovery_timer_timeout"]
+[connection signal="timeout" from="Timers/AttackCooldownTimer" to="." method="_on_attack_cooldown_timer_timeout"]
 [connection signal="area_entered" from="HitBox" to="." method="_on_hit_box_area_entered"]
 [connection signal="area_entered" from="InteractBox" to="." method="_on_interact_box_area_entered"]
 [connection signal="area_exited" from="InteractBox" to="." method="_on_interact_box_area_exited"]

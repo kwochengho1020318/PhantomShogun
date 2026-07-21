@@ -10,8 +10,6 @@ func _ready() -> void:
 
 func _moving_action()->void:
 	if state==State.DAMAGED:
-		
-		velocity=damaged_velocity
 		return
 	if attack_phase!=Attack_Phase.NORMAL:
 		velocity.x=0 

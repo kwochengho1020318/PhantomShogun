@@ -39,10 +39,12 @@ var direction=Vector2(1,0)
 var interacted_object
 
 var dead =false
-
+@export var max_agility:=2
+@export var agility:=max_agility
 @export var damaged_velocity_scale=10
 @export var HP = 5
 @export var climb_speed=100
+var break_level=0
 var damaged_velocity
 var damaged_count=0
 
@@ -56,5 +58,6 @@ func _manage_state()->void:
 	pass
 func _manage_animate()->void:
 	pass
-func _on_hit(damage,damage_velocity)->void:
+func _on_hit(damage,damage_velocity,agility_damage)->void:
 	pass
+	

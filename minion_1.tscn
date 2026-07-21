@@ -67,7 +67,7 @@ animations = [{
 "speed": 10.0
 }, {
 "frames": [{
-"duration": 4.0,
+"duration": 1.0,
 "texture": SubResource("AtlasTexture_p2t45")
 }],
 "loop": 1,
@@ -147,7 +147,7 @@ script = ExtResource("1_3ye6f")
 
 [node name="Animation" type="AnimatedSprite2D" parent="." unique_id=824132791]
 sprite_frames = SubResource("SpriteFrames_5ddvl")
-animation = &"damaged_2"
+animation = &"damaged_1"
 autoplay = "idle"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=971624223]
@@ -170,6 +170,10 @@ one_shot = true
 
 [node name="CleanupTimer" type="Timer" parent="Timers" unique_id=969813998]
 wait_time = 4.345000000000001
+
+[node name="AgilityReoveryTimer" type="Timer" parent="Timers" unique_id=1103774890]
+wait_time = 3.0
+one_shot = true
 
 [node name="Vision" type="Area2D" parent="." unique_id=513566558]
 visible = false
@@ -203,6 +207,7 @@ position = Vector2(20, 4)
 [connection signal="timeout" from="Timers/DamageRecoveryTimer" to="." method="_on_damage_recovery_timer_timeout"]
 [connection signal="timeout" from="Timers/AttackCoolDownTimer" to="." method="_on_attack_cool_down_timer_timeout"]
 [connection signal="timeout" from="Timers/CleanupTimer" to="." method="_on_cleanup_timer_timeout"]
+[connection signal="timeout" from="Timers/AgilityReoveryTimer" to="." method="_on_agility_reovery_timer_timeout"]
 [connection signal="body_entered" from="Vision" to="." method="_on_vision_body_entered"]
 [connection signal="body_exited" from="Vision" to="." method="_on_vision_body_exited"]
 [connection signal="area_entered" from="HitBox" to="." method="_on_hit_box_area_entered"]

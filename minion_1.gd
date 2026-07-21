@@ -6,7 +6,6 @@ class_name enemy
 @export var IDLE_SPEED:=50
 @export var initial_patrol = PATROL_STATE.PATROL
 
-
 enum  PATROL_STATE{
 	PATROL,
 	IDLE
@@ -14,9 +13,10 @@ enum  PATROL_STATE{
 
 var current_speed= IDLE_SPEED
 var start_x
+var current_action
 
 var waiting=false
-var next_direction=0
+var next_direction=Vector2(0,0)
 
 var animation_playing
 
@@ -34,7 +34,6 @@ var can_attack= true
 func _ready() -> void:
 
 	start_x = global_position.x
-	HP=5
 	current_speed= IDLE_SPEED
 	direction=Vector2(1,0)
 func _process(_delta: float) -> void:
@@ -56,10 +55,10 @@ func _physics_process(delta: float) -> void:
 func _character_action(_delta)->void:
 	
 	_manage_state()
-	
+	if current_action:
+		current_action.activate()
 	strat_by_mode()
 	_handle_direction()
-	attack_action()
 	_moving_action()
 func _dead_action()->void:
 	velocity= Vector2(0,0)
@@ -72,7 +71,10 @@ func _dead_action()->void:
 		$FlyComponent.disable()
 	get_tree().call_group("live_group", "set_disabled", true)
 func _handle_direction()->void:
+	if locomotion_state==Locomotion.damaged:
+		return
 	if !mode==Mode.ACTIVATED:
+		
 		if direction.x!=0:
 			facing_direction= direction.x
 	else:
@@ -90,9 +92,8 @@ func _handle_direction()->void:
 	$AttackComponent.area_facing(facing_direction)
 func _moving_action()->void:
 	if state==State.DAMAGED:
-		
-		
 		return
+	
 	if attack_phase!=Attack_Phase.NORMAL:
 		velocity.x=0 
 		return
@@ -136,12 +137,12 @@ func activated_mode()->void:
 	
 func wait_at_edge(new_direction):
 	waiting=true
-	next_direction=new_direction
+	next_direction.x=new_direction
 	$Timers/EdgeWaitTimer.start()
 func _on_edge_wait_timer_timeout() -> void:
 	waiting=false
 	
-	direction.x=next_direction
+	direction.x=next_direction.x
 	###防止timeout後又因為滿足條件又進入新的cycle
 	global_position.x += direction.x * 2
 
@@ -179,13 +180,8 @@ func _manage_animate()->void:
 			$Animation.play("dead")
 		return
 	if state==State.DAMAGED:
-		if damaged_count%2+1==1:
-			
-			if $Animation.animation!=("damaged_1"):
-				$Animation.play("damaged_1")
-		else:
-			if $Animation.animation!=("damaged_2"):
-				$Animation.play("damaged_2")
+		if $Animation.animation!=("damaged_%d" %[break_level]):
+			$Animation.play("damaged_%d" %[break_level])
 		return
 	if attack_phase==Attack_Phase.PRE_ATTACK:
 		if $Animation.animation!=("pre_attack_1"):
@@ -241,40 +237,50 @@ func _on_vision_body_exited(body: Node2D) -> void:
 
 func _on_damage_recovery_timer_timeout() -> void:
 	state= State.NORMAL
-
+	direction=next_direction
 
 
 		
 
 
 func _on_animation_animation_finished() -> void:
+	
 	if attack_phase==Attack_Phase.PRE_ATTACK:
+		$AttackComponent.area_valid(true)
+
 		attack_phase=Attack_Phase.ATTACKING
 		return
 	if attack_phase==Attack_Phase.ATTACKING:
+		$AttackComponent.area_valid(false)
 		attack_phase=Attack_Phase.NORMAL
 		return
+	
 		
 
 
 
-func _on_hit(damage,damage_velocity)->void:
+func _on_hit(damage,damage_velocity,agility_damage)->void:
 	if dead:
 		return
 
 	HP-=damage
+	agility-=agility_damage
+	$Timers/AgilityReoveryTimer.start()
 	
-	velocity= damage_velocity
+	state=State.DAMAGED
+	break_level = min(1,round((max_agility-agility)/max_agility)*3)+1
+	if break_level>=2:
+		agility = max_agility
+	velocity= damage_velocity*(2+break_level*2)/10
 	var from = -sign(damage_velocity.x)
-	direction = Vector2(from,0)
+	next_direction = Vector2(from,0)
 	if HP<=0:
 		dead=true
 		_dead_action()
 		$Timers/CleanupTimer.start()
 	attack_phase= Attack_Phase.NORMAL
-	state = State.DAMAGED
 	damaged_count+=1
-	$Timers/DamageRecoveryTimer.start()
+	$Timers/DamageRecoveryTimer.start(break_level*2/10)
 
 
 
@@ -286,3 +292,7 @@ func _on_cleanup_timer_timeout() -> void:
 func _on_attack_cool_down_timer_timeout() -> void:
 	can_attack= true
 	
+
+
+func _on_agility_reovery_timer_timeout() -> void:
+	agility= max_agility

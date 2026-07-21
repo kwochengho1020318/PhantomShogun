@@ -125,6 +125,8 @@ func _manage_state()->void:
 		if locomotion_state==Locomotion.CLIMB:
 			return
 		attack_phase=Attack_Phase.ATTACKING
+		$Timers/AttackCooldownTimer.start()
+		can_attack=false
 		attack_count+=1
 		return
 		
@@ -154,7 +156,6 @@ func _manage_animate()->void:
 				$Animation.play("damaged")
 		return
 	if attack_phase==Attack_Phase.ATTACKING:
-		if !can_attack: return
 		var temp = attack_count%3+1
 		if $Animation.animation!="attack_%d" %[temp]:
 				$Animation.play("attack_%d" %[temp])
@@ -193,7 +194,6 @@ func _on_animation_animation_finished() -> void:
 	if regex.search($Animation.animation):
 		
 		attack_phase=Attack_Phase.NORMAL
-		can_attack=true
 	if $Animation.animation.begins_with("parry_success"):
 		Global.is_player_parrying = false
 		
@@ -213,13 +213,17 @@ func _on_damage_recovery_timer_timeout() -> void:
 	state=State.NORMAL
 	Global.is_player_damaged = false
 	
-func _on_hit(damage,damage_velocity)->void:
+func _on_hit(damage,damage_velocity,agility_damage)->void:
 	if parry_state==PARRY_STATE.PARRYING and Time.get_ticks_msec()-parry_start_time<=valid_parry_time_msec:
 		parry_state= PARRY_STATE.PARRY_SUCCESS
 		Global.is_player_parrying = true
 	else:
+		$Timers/AgilityRecoveryTimer.start()
+		parry_state= PARRY_STATE.NORMAL
+		agility-=agility_damage
 		velocity= damage_velocity
-		state=State.DAMAGED
+		if agility<=0:
+			state=State.DAMAGED
 		Global.is_player_damaged = true
 		attack_phase= Attack_Phase.NORMAL
 
@@ -244,3 +248,11 @@ func _on_interact_object_box_area_exited(area: Area2D) -> void:
 
 func _on_interact_box_area_exited(area: Area2D) -> void:
 	pass # Replace with function body.
+
+
+func _on_agility_reovery_timer_timeout() -> void:
+	agility= max_agility
+
+
+func _on_attack_cooldown_timer_timeout() -> void:
+	can_attack=true

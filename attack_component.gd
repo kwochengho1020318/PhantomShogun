@@ -23,7 +23,6 @@ func area_valid(v)->void:
 func get_boundary()->float:
 	return abs(capsule.position.x+facing*(shape.radius))
 
-		
 func disable() ->void:
 	queue_free()
 
@@ -39,11 +38,10 @@ func _on_attack_area_area_entered(area: Area2D) -> void:
 
 
 func _on_detect_area_area_entered(area: Area2D) -> void:
-	if area.get_parent().name == "Player" and area.name =="HitBox":
-		
+	if _condition(area):
 		player_in_range= true
 
 
 func _on_detect_area_area_exited(area: Area2D) -> void:
-	if area.get_parent().name == "Player"and area.name =="HitBox":
+	if _condition(area):
 		player_in_range= false

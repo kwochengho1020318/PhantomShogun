@@ -10,8 +10,7 @@ func activated_mode()->void:
 		$Timers/AttackCoolDownTimer.start()
 		return
 	current_speed=SPEED
-	if player==null:
-		print("no player!!")
+	
 	var dist = global_position.distance_to(player.global_position)
 	
 	if (player.global_position.x-global_position.x)>0:

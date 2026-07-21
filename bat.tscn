@@ -67,7 +67,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_6gngy")
 }],
-"loop": false,
+"loop": 0,
 "name": &"attack_1",
 "speed": 10.0
 }, {
@@ -78,7 +78,7 @@ animations = [{
 "duration": 4.0,
 "texture": SubResource("AtlasTexture_c1ris")
 }],
-"loop": true,
+"loop": 1,
 "name": &"damaged_1",
 "speed": 5.0
 }, {
@@ -89,7 +89,7 @@ animations = [{
 "duration": 4.0,
 "texture": SubResource("AtlasTexture_e67ls")
 }],
-"loop": true,
+"loop": 1,
 "name": &"damaged_2",
 "speed": 5.0
 }, {
@@ -97,7 +97,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_v8i1r")
 }],
-"loop": true,
+"loop": 1,
 "name": &"dead",
 "speed": 5.0
 }, {
@@ -108,7 +108,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_jp0fn")
 }],
-"loop": true,
+"loop": 1,
 "name": &"idle",
 "speed": 1.0
 }, {
@@ -122,7 +122,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_j6ywg")
 }],
-"loop": false,
+"loop": 0,
 "name": &"pre_attack_1",
 "speed": 10.0
 }, {
@@ -139,7 +139,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_1e43q")
 }],
-"loop": true,
+"loop": 1,
 "name": &"walk",
 "speed": 5.0
 }]
@@ -160,7 +160,7 @@ SPEED = 241
 
 [node name="Animation" parent="." index="0" unique_id=824132791]
 sprite_frames = SubResource("SpriteFrames_c1ris")
-animation = &"idle"
+animation = &"damaged_2"
 
 [node name="CollisionShape2D" parent="." index="1" unique_id=971624223]
 visible = true

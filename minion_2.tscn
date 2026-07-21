@@ -68,7 +68,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_o0tp6")
 }],
-"loop": false,
+"loop": 0,
 "name": &"attack_1",
 "speed": 10.0
 }, {
@@ -79,7 +79,7 @@ animations = [{
 "duration": 4.0,
 "texture": SubResource("AtlasTexture_s6nir")
 }],
-"loop": true,
+"loop": 1,
 "name": &"damaged_1",
 "speed": 5.0
 }, {
@@ -90,7 +90,7 @@ animations = [{
 "duration": 4.0,
 "texture": SubResource("AtlasTexture_1hqpr")
 }],
-"loop": true,
+"loop": 1,
 "name": &"damaged_2",
 "speed": 5.0
 }, {
@@ -98,7 +98,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_sjx5h")
 }],
-"loop": true,
+"loop": 1,
 "name": &"dead",
 "speed": 5.0
 }, {
@@ -109,7 +109,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_q81qf")
 }],
-"loop": true,
+"loop": 1,
 "name": &"idle",
 "speed": 1.0
 }, {
@@ -123,7 +123,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_xmaj8")
 }],
-"loop": false,
+"loop": 0,
 "name": &"pre_attack_1",
 "speed": 10.0
 }, {
@@ -134,7 +134,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_wueo1")
 }],
-"loop": true,
+"loop": 1,
 "name": &"walk",
 "speed": 5.0
 }]
@@ -159,9 +159,9 @@ script = ExtResource("2_xsp7l")
 
 [node name="Animation" parent="." index="0" unique_id=824132791]
 sprite_frames = SubResource("SpriteFrames_satxp")
-animation = &"idle"
 
 [node name="CollisionShape2D" parent="." index="1" unique_id=971624223]
+visible = true
 shape = SubResource("CapsuleShape2D_xsp7l")
 
 [node name="AttackCoolDownTimer" parent="Timers" parent_id_path=PackedInt32Array(541122291) index="2" unique_id=1444358846]
